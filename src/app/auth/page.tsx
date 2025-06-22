@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
+
+import React from "react";
+// import { SignupCard } from "../../components/signup-card";
 import { Squares } from "@/components/ui/squares-background";
 import { Navbar } from "@/components/ui/mini-navbar";
-import { Hero1 } from "@/components/ui/hero-1";
-import { Footer } from "@/components/footer";
+import { SignInPage } from "@/components/blocks/sign-in-flow-1";
 
-const Home = () => {
+function Auth() {
   return (
     <div className="space-y-8">
       <div className="fixed inset-0 -z-10 overflow-hidden bg-[#060606] h-[100dvh]">
@@ -19,10 +20,11 @@ const Home = () => {
         />
       </div>
       <Navbar />
-      <Hero1 />
-      <Footer />
+      <div>
+        <SignInPage />
+      </div>
     </div>
   );
-};
+}
 
-export default Home;
+export default Auth;

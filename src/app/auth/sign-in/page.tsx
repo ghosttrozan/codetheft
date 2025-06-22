@@ -1,11 +1,14 @@
 "use client";
-import React, { useState } from "react";
+
+import { useTheme } from "next-themes";
+import React from "react";
 import { Squares } from "@/components/ui/squares-background";
 import { Navbar } from "@/components/ui/mini-navbar";
-import { Hero1 } from "@/components/ui/hero-1";
-import { Footer } from "@/components/footer";
+import { Component } from "@/components/ui/sign-in-flo";
 
-const Home = () => {
+function SignInPage() {
+  const { theme } = useTheme();
+
   return (
     <div className="space-y-8">
       <div className="fixed inset-0 -z-10 overflow-hidden bg-[#060606] h-[100dvh]">
@@ -19,10 +22,12 @@ const Home = () => {
         />
       </div>
       <Navbar />
-      <Hero1 />
-      <Footer />
+      <div className="">
+        <Component />
+        {/* sign in card */}
+      </div>
     </div>
   );
-};
+}
 
-export default Home;
+export default SignInPage;

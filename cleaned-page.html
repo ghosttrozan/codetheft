@@ -1,0 +1,578 @@
+This conversion takes the provided complex HTML, which resembles an Instagram login page, and refactors it into a production-ready React functional component using JSX and Tailwind CSS.
+
+**Key Changes and Enhancements:**
+
+1.  **React Functional Component:** The entire structure is encapsulated within a `Result` functional component.
+2.  **JSX Syntax:** All HTML elements are converted to JSX, including `className` for classes, `htmlFor` for labels, and self-closing tags.
+3.  **Component Structure:**
+    *   The `Result` component manages the overall layout, state, and event handlers.
+    *   `InputField` is extracted as a reusable sub-component for better modularity, handling its own label animation and error display.
+    *   SVG icons are extracted into small, reusable components for cleanliness.
+4.  **Tailwind CSS:**
+    *   All original, highly obfuscated Instagram-specific CSS classes (e.g., `_9f619`, `x78zum5`) and inline styles are replaced with descriptive Tailwind CSS utility classes.
+    *   **Responsive Design:** Tailwind's mobile-first approach is applied, with `lg:` prefixes to define layouts for larger screens (e.g., the phone screenshot appearing only on large screens).
+    *   **Modern UI/UX:**
+        *   Clean typography, proper spacing (`p-`, `m-`, `gap-`), and subtle shadows (`shadow-md`, `rounded-lg`).
+        *   Smooth transitions (`transition`, `duration-`, `ease-in-out`) are added to interactive elements like buttons, links, and input fields for a more fluid user experience.
+        *   `hover:` and `focus:` pseudo-classes are extensively used for interactive feedback.
+        *   `dark:` variants are used for basic dark mode support, assuming a global dark mode toggle would be implemented at a higher level (e.g., using `localStorage` or context API).
+5.  **Functionality:**
+    *   **State Management:** `useState` hooks manage input field values, validation errors, and the selected language.
+    *   **Event Handling:** `onChange`, `onSubmit`, and `onClick` handlers are implemented for form elements and buttons.
+    *   **Basic Form Validation:** The "Log in" button is disabled until both username and password fields have content. Simple error messages are displayed for empty fields.
+6.  **Accessibility (A11y):**
+    *   **ARIA Attributes:** `aria-label`, `aria-required`, `role="main"`, `role="contentinfo"`, `role="dialog"`, and `aria-labelledby` are strategically placed to improve screen reader compatibility.
+    *   **Keyboard Navigation:** Native interactive elements (`<button>`, `<a>`, `<input>`, `<select>`) inherently support keyboard navigation. `tabIndex` is used where present in the original, though often redundant for native interactive elements.
+    *   **Semantic HTML5:** Using `main`, `form`, `footer`, `label`, `input`, `button`, `a`, `img`, `p`, `span`, and `div` to ensure a meaningful document structure.
+    *   `sr-only` class is used for visually hidden labels that provide context to screen readers.
+    *   `alt` attributes are provided for all images.
+7.  **Performance Considerations:**
+    *   `loading="lazy"` is added to images to defer loading of off-screen images.
+    *   React's virtual DOM minimizes direct DOM manipulations.
+    *   Tailwind's utility-first approach generally leads to optimized CSS.
+    *   The numerous `<link rel="preload">` tags from the original HTML are omitted as they are typically handled by a React build system (like Webpack or Vite) for optimal asset delivery.
+
+**Important Notes for Usage:**
+
+*   **Tailwind CSS Setup:** This JSX code assumes you have Tailwind CSS configured in your React project. You'll need to run `npm install -D tailwindcss postcss autoprefixer` and then `npx tailwindcss init -p` to set it up, ensuring your `tailwind.config.js` scans your JSX files.
+*   **Root Element:** This `Result` component should be rendered inside your main `index.js` or `App.js` file in a React application. The global `<html>` and `<head>` elements from the original HTML are managed by your `public/index.html` and optionally by libraries like React Helmet for dynamic meta tags.
+*   **Functionality Stubs:** Login, Facebook login, and language change handlers are currently stubs (`console.log` and `alert`). In a real application, these would interact with your backend API or global state management.
+*   **Image Paths:** The `src` attributes for images are kept as external CDN links from the original HTML. For a true production app, these images would typically be downloaded, optimized, and imported as local assets to leverage your build system's optimizations.
+*   **Dark Mode:** The `dark:` variants are included, but you'd need a mechanism (e.g., a theme context or `localStorage`) to toggle the `dark` class on the `<html>` or root `div` element for dark mode to activate.
+
+```jsx
+// src/components/Result.jsx (or a similar path in your React project)
+
+import React, { useState, useEffect } from 'react';
+
+// --- Reusable SVG Icon Components ---
+// Extracted for cleaner JSX and potential reusability across the application.
+
+/**
+ * Facebook Login Icon SVG
+ * @param {object} props - Component props
+ * @param {string} props.className - Tailwind CSS classes for styling the SVG
+ */
+const FacebookIcon = ({ className }) => (
+  <svg
+    aria-label="Log in with Facebook"
+    className={className}
+    fill="currentColor"
+    height="20"
+    role="img"
+    viewBox="0 0 16 16"
+    width="20"
+  >
+    <title>Log in with Facebook</title>
+    {/* Clip path definition to prevent fill issues on complex paths */}
+    <g clipPath="url(#facebook-icon-clip)">
+      <path d="M8 0C3.6 0 0 3.6 0 8c0 4 2.9 7.3 6.8 7.9v-5.6h-2V8h2V6.2c0-2 1.2-3.1 3-3.1.9 0 1.8.2 1.8.2v2h-1c-1 0-1.3.6-1.3 1.3V8h2.2l-.4 2.3H9.2v5.6C13.1 15.3 16 12 16 8c0-4.4-3.6-8-8-8Z" fill="currentColor"></path>
+    </g>
+    <defs>
+      <clipPath id="facebook-icon-clip">
+        <rect fill="currentColor" height="16" width="16"></rect>
+      </clipPath>
+    </defs>
+  </svg>
+);
+
+/**
+ * Down Chevron Icon SVG (rotated for language selector)
+ * @param {object} props - Component props
+ * @param {string} props.className - Tailwind CSS classes for styling the SVG
+ */
+const ChevronDownIcon = ({ className }) => (
+  <svg
+    aria-label="Down chevron icon"
+    className={className}
+    fill="currentColor"
+    height="12"
+    role="img"
+    viewBox="0 0 24 24"
+    width="12"
+  >
+    <title>Down chevron icon</title>
+    <path d="M21 17.502a.997.997 0 0 1-.707-.293L12 8.913l-8.293 8.296a1 1 0 1 1-1.414-1.414l9-9.004a1.03 1.03 0 0 1 1.414 0l9 9.004A1 1 0 0 1 21 17.502Z"></path>
+  </svg>
+);
+
+/**
+ * Close Icon SVG
+ * @param {object} props - Component props
+ * @param {string} props.className - Tailwind CSS classes for styling the SVG
+ */
+const CloseIcon = ({ className }) => (
+  <svg
+    aria-label="Close"
+    className={className}
+    fill="currentColor"
+    height="12"
+    role="img"
+    viewBox="0 0 24 24"
+    width="12"
+  >
+    <title>Close</title>
+    <polyline fill="none" points="20.643 3.357 12 12 3.353 20.647" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3"></polyline>
+    <line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" x1="20.649" x2="3.354" y1="20.649" y2="3.354"></line>
+  </svg>
+);
+
+// --- InputField Component ---
+// Custom input field with floating label and basic error display.
+// Enhances UX and accessibility.
+const InputField = ({ label, type, name, value, onChange, error, ariaLabel, ariaRequired }) => {
+  const [isFocused, setIsFocused] = useState(false);
+  const showLabel = isFocused || value; // Label floats up if focused or has value
+
+  return (
+    <div className="relative mb-4">
+      {/* SR-only label for accessibility, actual label effect handled by span */}
+      <label htmlFor={name} className="sr-only">
+        {ariaLabel}
+      </label>
+      <input
+        id={name}
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        aria-label={ariaLabel}
+        aria-required={ariaRequired}
+        autoCapitalize="off" // Per original HTML
+        autoCorrect="off"   // Per original HTML
+        maxLength="75"      // Per original HTML
+        className={`
+          peer w-full px-3 pt-4 pb-1
+          border ${error ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}
+          rounded-md outline-none
+          focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400
+          dark:bg-gray-700 dark:text-white
+          text-sm transition-all duration-200 ease-in-out
+          placeholder-transparent focus:placeholder-gray-400
+        `}
+        placeholder={label} // Placeholder text for browsers that don't support peer or as a fallback
+      />
+      {/* Visual floating label (moves above input on focus/value) */}
+      <span
+        className={`
+          absolute left-3 ${showLabel ? 'top-1 text-xs' : 'top-1/2 text-sm -translate-y-1/2'}
+          ${error ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}
+          peer-focus:top-1 peer-focus:text-xs
+          peer-focus:${error ? 'text-red-500' : 'text-blue-500 dark:text-blue-400'}
+          transition-all duration-200 ease-in-out pointer-events-none
+        `}
+        aria-hidden="true" // Hide from screen readers as input has aria-label
+      >
+        {label}
+      </span>
+      {/* Error message display */}
+      {error && (
+        <p className="text-red-500 text-xs mt-1" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+};
+
+// --- Main Result Component ---
+const Result = () => {
+  // State for form inputs
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  // State for input validation errors
+  const [usernameError, setUsernameError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  // State for language selection
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  // State for controlling visibility of the terms banner
+  const [showTermsBanner, setShowTermsBanner] = useState(true);
+
+  // Derived state: check if login form inputs are valid for button enablement
+  const isLoginFormValid = username.length > 0 && password.length > 0;
+
+  // Handle form submission
+  const handleLoginSubmit = (e) => {
+    e.preventDefault(); // Prevent default browser form submission
+    let isValid = true;
+
+    // Basic client-side validation
+    if (!username.trim()) {
+      setUsernameError('Username cannot be empty.');
+      isValid = false;
+    } else {
+      setUsernameError('');
+    }
+
+    if (!password.trim()) {
+      setPasswordError('Password cannot be empty.');
+      isValid = false;
+    } else {
+      setPasswordError('');
+    }
+
+    if (isValid) {
+      console.log('Login attempt:', { username, password });
+      alert('Login functionality not implemented. Check console for form data.');
+      // TODO: In a real application, you would send this data to an API endpoint
+      // and handle success/failure, redirect, show loading state, etc.
+    }
+  };
+
+  // Handle Facebook login button click
+  const handleFacebookLogin = () => {
+    console.log('Initiating login with Facebook...');
+    alert('Facebook login functionality not implemented.');
+    // TODO: Integrate with Facebook SDK or OAuth flow
+  };
+
+  // Handle language selection change
+  const handleLanguageChange = (e) => {
+    setSelectedLanguage(e.target.value);
+    console.log('Language changed to:', e.target.value);
+    // TODO: In a real application, this would trigger i18n (internationalization) changes
+    // to update the displayed text content.
+  };
+
+  // Example list of languages for the dropdown
+  const languages = [
+    { value: 'af', label: 'Afrikaans' }, { value: 'ar', label: 'العربية' },
+    { value: 'cs', label: 'Čeština' }, { value: 'da', label: 'Dansk' },
+    { value: 'de', label: 'Deutsch' }, { value: 'el', label: 'Ελληνικά' },
+    { value: 'en', label: 'English' }, { value: 'en-gb', label: 'English (UK)' },
+    { value: 'es', label: 'Español (España)' }, { value: 'es-la', label: 'Español' },
+    { value: 'fa', label: 'فارسی' }, { value: 'fi', label: 'Suomi' },
+    { value: 'fr', label: 'Français' }, { value: 'he', label: 'עברית' },
+    { value: 'id', label: 'Bahasa Indonesia' }, { value: 'it', label: 'Italiano' },
+    { value: 'ja', label: '日本語' }, { value: 'ko', label: '한국어' },
+    { value: 'ms', label: 'Bahasa Melayu' }, { value: 'nb', label: 'Norsk' },
+    { value: 'nl', label: 'Nederlands' }, { value: 'pl', label: 'Polski' },
+    { value: 'pt-br', label: 'Português (Brasil)' }, { value: 'pt', label: 'Português (Portugal)' },
+    { value: 'ru', label: 'Русский' }, { value: 'sv', label: 'Svenska' },
+    { value: 'th', label: 'ภาษาไทย' }, { value: 'tl', label: 'Filipino' },
+    { value: 'tr', label: 'Türkçe' }, { value: 'zh-cn', label: '中文(简体)' },
+    { value: 'zh-tw', label: '中文(台灣)' }, { value: 'bn', label: 'বাংলা' },
+    { value: 'gu', label: 'ગુજરાતી' }, { value: 'hi', label: 'हिन्दी' },
+    { value: 'hr', label: 'Hrvatski' }, { value: 'hu', label: 'Magyar' },
+    { value: 'kn', label: 'ಕನ್ನಡ' }, { value: 'ml', label: 'മലയാളം' },
+    { value: 'mr', label: 'मराठी' }, { value: 'ne', label: 'नेपाली' },
+    { value: 'pa', label: 'ਪੰਜਾਬੀ' }, { value: 'si', label: 'සිංහල' },
+    { value: 'sk', label: 'Slovenčina' }, { value: 'ta', label: 'தமிழ்' },
+    { value: 'te', label: 'తెలుగు' }, { value: 'ur', label: 'اردو' },
+    { value: 'vi', label: 'Tiếng Việt' }, { value: 'zh-hk', label: '中文(香港)' },
+    { value: 'bg', label: 'Български' }, { value: 'fr-ca', label: 'Français (Canada)' },
+    { value: 'ro', label: 'Română' }, { value: 'sr', label: 'Српски' },
+    { value: 'uk', label: 'Українська' },
+  ];
+
+  return (
+    // Main container for the entire page, providing background color and central alignment
+    <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white flex flex-col items-center justify-center py-8 px-4 transition-colors duration-300">
+      {/* Main content area: flex container for left image and right form section */}
+      <main className="flex flex-col lg:flex-row items-center justify-center w-full max-w-5xl gap-8">
+        {/* Left Section: Decorative Screenshot Image */}
+        {/* Hidden on small screens, displayed as flex on large screens */}
+        <div className="hidden lg:flex items-center justify-center flex-1 min-w-0">
+          <img
+            src="https://www.instagram.com/images/instagram/xig/homepage/screenshots_v3/instagram-web-lox-image.png"
+            alt="Instagram app screenshot on phone"
+            className="h-[581px] object-contain"
+            aria-hidden="true" // Mark as decorative for screen readers
+            loading="lazy" // Optimize image loading
+          />
+        </div>
+
+        {/* Right Section: Login and Signup Form */}
+        <div className="flex flex-col items-center flex-1 max-w-sm w-full">
+          {/* Login Card Container */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-300 dark:border-gray-700 p-8 pt-10 pb-6 w-full flex flex-col items-center mb-2 animate-fade-in-up">
+            {/* Instagram Logo */}
+            <div className="mb-8 mt-2">
+              <img
+                src="https://static.cdninstagram.com/rsrc.php/v4/yB/r/E7m8ZCMOFDS.png"
+                alt="Instagram logo"
+                className="w-[175px] h-[51px] object-contain dark:filter dark:invert" // Invert for dark mode visibility
+              />
+            </div>
+
+            {/* Login Form */}
+            <form id="loginForm" onSubmit={handleLoginSubmit} className="w-full" aria-label="Login form">
+              {/* Username/Email Input Field */}
+              <InputField
+                label="Phone number, username, or email"
+                type="text"
+                name="username"
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  setUsernameError(''); // Clear error when user types
+                }}
+                error={usernameError}
+                ariaLabel="Phone number, username, or email"
+                ariaRequired={true}
+              />
+              {/* Password Input Field */}
+              <InputField
+                label="Password"
+                type="password"
+                name="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordError(''); // Clear error when user types
+                }}
+                error={passwordError}
+                ariaLabel="Password"
+                ariaRequired={true}
+              />
+
+              {/* Login Button */}
+              <button
+                type="submit"
+                className={`
+                  w-full py-2 px-4 mt-2
+                  bg-blue-500 hover:bg-blue-600 focus:bg-blue-700
+                  text-white font-semibold rounded-lg
+                  transition duration-200 ease-in-out
+                  ${!isLoginFormValid ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.01] active:scale-[0.99]'}
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
+                `}
+                disabled={!isLoginFormValid} // Disable button if inputs are empty
+                aria-disabled={!isLoginFormValid}
+              >
+                Log in
+              </button>
+
+              {/* OR Separator */}
+              <div className="relative flex items-center py-5">
+                <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                <span className="flex-shrink mx-4 text-gray-500 dark:text-gray-400 font-semibold text-sm">
+                  OR
+                </span>
+                <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+              </div>
+
+              {/* Log in with Facebook Button */}
+              <button
+                type="button"
+                onClick={handleFacebookLogin}
+                className="
+                  w-full py-2 px-4
+                  bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700
+                  text-blue-800 dark:text-blue-400 font-semibold rounded-lg
+                  transition duration-200 ease-in-out
+                  flex items-center justify-center gap-2
+                  hover:scale-[1.01] active:scale-[0.99]
+                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
+                "
+                aria-label="Log in with Facebook"
+              >
+                <FacebookIcon className="text-blue-600 dark:text-blue-400" />
+                <span className="text-sm">Log in with Facebook</span>
+              </button>
+
+              {/* Forgot Password Link */}
+              <div className="mt-4 text-center">
+                <a
+                  href="/accounts/password/reset/"
+                  role="link"
+                  tabIndex="0" // Explicit tabIndex as per original, though default usually fine
+                  className="text-xs text-blue-800 dark:text-blue-400 hover:underline transition-colors duration-200"
+                >
+                  Forgot password?
+                </a>
+              </div>
+            </form>
+          </div>
+
+          {/* Signup Prompt Card */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-300 dark:border-gray-700 p-4 text-center w-full mt-2 animate-fade-in-up">
+            <p className="text-sm">
+              Don't have an account?{' '}
+              <a
+                href="/accounts/emailsignup/"
+                role="link"
+                tabIndex="0"
+                className="text-blue-500 dark:text-blue-400 font-semibold hover:underline transition-colors duration-200"
+              >
+                Sign up
+              </a>
+            </p>
+          </div>
+
+          {/* Get the App Section */}
+          <div className="text-center mt-4 text-sm">
+            <p className="mb-4">Get the app.</p>
+            <div className="flex justify-center gap-2">
+              <a
+                aria-label="Download on the App Store"
+                href="https://apps.apple.com/app/instagram/id389801252?ct=igweb.undefined.badge&amp;mt=8&amp;pt=428156&amp;vt=lo"
+                rel="nofollow noreferrer"
+                role="link"
+                tabIndex="0"
+                target="_blank" // Opens in new tab
+                className="hover:scale-105 transition-transform duration-200"
+              >
+                <img
+                  alt="Download on the App Store"
+                  className="h-10"
+                  src="https://static.cdninstagram.com/rsrc.php/v4/yt/r/Yfc020c87j0.png"
+                  loading="lazy" // Optimize image loading
+                />
+              </a>
+              <a
+                aria-label="Get it on Google Play"
+                href="https://play.google.com/store/apps/details?id=com.instagram.android&amp;referrer=ig_mid%3DC493CF73-713C-4511-B442-BC98DF5DA0CD%26utm_content%3Dlo%26utm_source%3Dinstagramweb%26utm_medium%3Dbadge"
+                rel="nofollow noreferrer"
+                role="link"
+                tabIndex="0"
+                target="_blank" // Opens in new tab
+                className="hover:scale-105 transition-transform duration-200"
+              >
+                <img
+                  alt="Get it on Google Play"
+                  className="h-10"
+                  src="https://static.cdninstagram.com/rsrc.php/v4/yz/r/c5Rp7Ym-Klz.png"
+                  loading="lazy" // Optimize image loading
+                />
+              </a>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="w-full max-w-5xl mt-12 p-4 text-xs text-gray-500 dark:text-gray-400" role="contentinfo">
+        {/* Footer Navigation Links */}
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-4">
+          {/* Each link is given standard a11y attributes and hover effects */}
+          <a href="https://about.meta.com/" rel="nofollow noopener noreferrer" target="_blank" className="hover:underline transition-colors duration-200">Meta</a>
+          <a href="https://about.instagram.com/" rel="nofollow noopener noreferrer" target="_blank" className="hover:underline transition-colors duration-200">About</a>
+          <a href="https://about.instagram.com/blog/" rel="nofollow noopener noreferrer" target="_blank" className="hover:underline transition-colors duration-200">Blog</a>
+          <a href="https://about.instagram.com/about-us/careers" rel="nofollow noopener noreferrer" target="_blank" className="hover:underline transition-colors duration-200">Jobs</a>
+          <a href="https://help.instagram.com/" rel="nofollow noopener noreferrer" target="_blank" className="hover:underline transition-colors duration-200">Help</a>
+          <a href="https://developers.facebook.com/docs/instagram" rel="nofollow noopener noreferrer" target="_blank" className="hover:underline transition-colors duration-200">API</a>
+          <a href="/legal/privacy/" role="link" tabIndex="0" className="hover:underline transition-colors duration-200">Privacy</a>
+          <a href="/legal/terms/" role="link" tabIndex="0" className="hover:underline transition-colors duration-200">Terms</a>
+          <a href="/explore/locations/" role="link" tabIndex="0" className="hover:underline transition-colors duration-200">Locations</a>
+          <a href="/web/lite/" role="link" tabIndex="0" className="hover:underline transition-colors duration-200">Instagram Lite</a>
+          <a href="https://www.threads.com/" target="_blank" className="hover:underline transition-colors duration-200">Threads</a>
+          <a href="https://www.facebook.com/help/instagram/261704639352628" rel="nofollow noreferrer" role="link" tabIndex="0" target="_blank" className="hover:underline transition-colors duration-200">Contact Uploading &amp; Non-Users</a>
+          <a href="/accounts/meta_verified/?entrypoint=web_footer" role="link" tabIndex="0" className="hover:underline transition-colors duration-200">Meta Verified</a>
+        </div>
+
+        {/* Language Selector and Copyright */}
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4">
+          <div className="relative inline-block">
+            {/* SR-only label for select input accessibility */}
+            <label htmlFor="language-select" className="sr-only">
+              Switch Display Language
+            </label>
+            <select
+              id="language-select"
+              aria-label="Switch Display Language"
+              className="
+                appearance-none bg-transparent border border-gray-300 dark:border-gray-600
+                rounded-md px-2 py-1 text-xs text-gray-700 dark:text-gray-300 pr-8
+                cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400
+                transition duration-200 ease-in-out
+              "
+              value={selectedLanguage}
+              onChange={handleLanguageChange}
+            >
+              {languages.map((lang) => (
+                <option key={lang.value} value={lang.value}>
+                  {lang.label}
+                </option>
+              ))}
+            </select>
+            {/* Custom arrow for the select dropdown */}
+            <span className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+              <ChevronDownIcon className="w-3 h-3" />
+            </span>
+          </div>
+          {/* Copyright Information */}
+          <span className="text-gray-700 dark:text-gray-300">© {new Date().getFullYear()} Instagram from Meta</span>
+        </div>
+      </footer>
+
+      {/* Persistent Terms and Privacy Policy Banner */}
+      {showTermsBanner && (
+        <div
+          className="fixed bottom-0 left-0 right-0
+                    bg-white dark:bg-gray-800
+                    border-t border-gray-300 dark:border-gray-700
+                    p-4 text-center text-xs text-gray-700 dark:text-gray-300
+                    z-50 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4
+                    transition-transform duration-300 ease-out transform translate-y-0
+                    px-4 md:px-8 lg:px-12"
+          role="dialog" // Indicate this is a dialog for screen readers
+          aria-labelledby="terms-banner-heading" // Link to the visually hidden heading
+        >
+          <h2 id="terms-banner-heading" className="sr-only">Terms and Privacy Policy Notice</h2>
+          <span className="max-w-prose">
+            By continuing, you agree to Instagram's{' '}
+            <a
+              href="https://help.instagram.com/581066165581870/?locale=en_US"
+              rel="nofollow noopener noreferrer"
+              target="_self"
+              className="text-blue-500 dark:text-blue-400 hover:underline transition-colors duration-200"
+            >
+              Terms of Use
+            </a>{' '}
+            and{' '}
+            <a
+              href="https://privacycenter.instagram.com/policy/"
+              rel="nofollow noopener noreferrer"
+              target="_blank"
+              className="text-blue-500 dark:text-blue-400 hover:underline transition-colors duration-200"
+            >
+              Privacy Policy
+            </a>
+            .
+          </span>
+          {/* Close button for the banner */}
+          <button
+            onClick={() => setShowTermsBanner(false)}
+            aria-label="Close terms and privacy policy banner"
+            className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
+          >
+            <CloseIcon className="w-3 h-3 text-gray-600 dark:text-gray-300" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Result;
+
+/*
+TODO: Future Enhancements for a Production Application:
+
+1.  **Global Dark Mode Toggle:** Implement a context API or Redux store to manage the dark mode state globally,
+    allowing users to explicitly switch themes. The current `dark:` classes are ready for this.
+2.  **Asset Management:** Instead of CDN links for images, import them locally. Your build tool (e.g., Vite, Webpack)
+    will then optimize and bundle them, often adding hash filenames for cache busting.
+    Example: `import instagramLogo from '../assets/instagram-logo.png';`
+3.  **API Integration:** Replace `console.log` and `alert` in form submission handlers with actual API calls
+    to a backend for user authentication. Handle loading states, success messages, and specific error responses.
+4.  **Advanced Form Validation:** Implement more robust validation, such as:
+    *   Regex for email format.
+    *   Minimum password length, complexity requirements.
+    *   Real-time validation feedback as the user types.
+    *   Displaying backend-provided error messages.
+5.  **Routing:** If this is part of a larger application, use a routing library like React Router DOM for navigation
+    (e.g., for `/accounts/password/reset` or `/accounts/emailsignup`).
+6.  **Internationalization (i18n):** For multi-language support, integrate an i18n library (e.g., `react-i18next`).
+    The `languages` array and `handleLanguageChange` are placeholders.
+7.  **Component Breakdowns:** For very large components, consider further breaking down sections (e.g., `FooterLinks`, `AppDownloadButtons`)
+    into smaller, more focused components for better readability and reusability, especially if they manage their own specific logic.
+8.  **Animations:** Add more sophisticated animations using CSS transitions/animations or a library like Framer Motion for
+    more engaging UI elements (e.g., form entry animations).
+9.  **Error Boundaries:** Implement React Error Boundaries to gracefully handle JavaScript errors in parts of the UI.
+10. **Testing:** Write unit, integration, and end-to-end tests for components and functionality.
+*/
+```
