@@ -69,8 +69,6 @@ const navigation = {
   ],
 };
 
-const Underline = `hover:-translate-y-1 border border-dotted rounded-xl p-2.5 transition-transform `;
-
 export function Footer() {
   return (
     <footer className="border-ali/20 :px-4 mx-auto w-full border-b   border-t  px-2">

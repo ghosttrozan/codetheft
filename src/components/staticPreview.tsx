@@ -104,16 +104,6 @@ export function StaticPreview({ code }: { code: string }) {
 
 // Special processor for YouTube HTML
 function processYouTubeHtml(rawCode: string): string {
-  // 1. Preserve YouTube's custom elements and attributes
-  const preservedElements = [
-    "ytd-app",
-    "ytd-page-manager",
-    "ytd-browse",
-    "ytd-rich-grid-row",
-  ];
-  const preservedAttributes = ["is", "slot", "role", "tabindex"];
-
-  // 2. Basic sanitization while keeping YouTube structure
   let processed = rawCode
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
     .replace(/on\w+="[^"]*"/g, "")
@@ -132,7 +122,7 @@ function extractHeadContent(html: string): string {
   const headMatch = html.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
   if (!headMatch) return "";
 
-  let headContent = headMatch[1]
+  const headContent = headMatch[1]
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
     .replace(/<link\b[^>]*rel="stylesheet"[^>]*>/gi, "")
     .replace(/<style[^>]*nonce="[^"]*"[^>]*>/g, "<style>");

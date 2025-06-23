@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles, Type, Link, X, RocketIcon } from "lucide-react";
+import { Sparkles, Link, X, RocketIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { useUserStore } from "@/store/userStore";
 import { useRouter } from "next/navigation";
@@ -116,6 +116,7 @@ const Hero1 = () => {
 
   const handleLanguageSelect = (lang: string) => {
     setSelectedLanguage(lang);
+    console.log(selectedLanguage);
   };
 
   const { user } = useUserStore();
@@ -158,7 +159,7 @@ const Hero1 = () => {
       return;
     }
 
-    if (user.credits <= 0) {
+    if ((user?.credits ?? 0) <= 0) {
       setError(true);
       return;
     }
@@ -280,7 +281,7 @@ const Hero1 = () => {
                   Credits Exhausted!
                 </AlertTitle>
                 <AlertDescription className="text-gray-600 dark:text-gray-300 mt-1">
-                  You've used all your available credits. Upgrade your plan to
+                  You ve used all your available credits. Upgrade your plan to
                   continue generating code.
                 </AlertDescription>
               </div>
@@ -358,7 +359,9 @@ const Hero1 = () => {
                 type="text"
                 value={inputValue}
                 onKeyDown={(e) => {
-                  e.key === "Enter" && setShowAlert(true);
+                  if (e.key === "Enter") {
+                    setShowAlert(true);
+                  }
                 }}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={`${inputMode === "url" ? "Enter Valid URL (must end with .com, .in, etc.)" : '"How CodeTheft can help you today?"'}`}

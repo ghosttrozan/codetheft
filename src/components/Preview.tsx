@@ -11,7 +11,8 @@ export const Preview: React.FC<PreviewProps> = ({ code }) => {
   const [jsx, setJsx] = useState("");
   const [isStreaming, setIsStreaming] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+  const isLoading = false;
 
   // Typing effect + error handling
   useEffect(() => {

@@ -1,578 +1,3295 @@
-This conversion takes the provided complex HTML, which resembles an Instagram login page, and refactors it into a production-ready React functional component using JSX and Tailwind CSS.
+```html
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 
-**Key Changes and Enhancements:**
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChaiCode - Home for Programmers</title>
+  <meta name="description" content="Learn programming with ChaiCode - Your ultimate destination for coding education">
+  <link rel="icon" href="https://www.chaicode.com/favicon.ico" type="image/x-icon" sizes="16x16">
+  <link rel="icon" href="https://www.chaicode.com/chai-gray.svg">
 
-1.  **React Functional Component:** The entire structure is encapsulated within a `Result` functional component.
-2.  **JSX Syntax:** All HTML elements are converted to JSX, including `className` for classes, `htmlFor` for labels, and self-closing tags.
-3.  **Component Structure:**
-    *   The `Result` component manages the overall layout, state, and event handlers.
-    *   `InputField` is extracted as a reusable sub-component for better modularity, handling its own label animation and error display.
-    *   SVG icons are extracted into small, reusable components for cleanliness.
-4.  **Tailwind CSS:**
-    *   All original, highly obfuscated Instagram-specific CSS classes (e.g., `_9f619`, `x78zum5`) and inline styles are replaced with descriptive Tailwind CSS utility classes.
-    *   **Responsive Design:** Tailwind's mobile-first approach is applied, with `lg:` prefixes to define layouts for larger screens (e.g., the phone screenshot appearing only on large screens).
-    *   **Modern UI/UX:**
-        *   Clean typography, proper spacing (`p-`, `m-`, `gap-`), and subtle shadows (`shadow-md`, `rounded-lg`).
-        *   Smooth transitions (`transition`, `duration-`, `ease-in-out`) are added to interactive elements like buttons, links, and input fields for a more fluid user experience.
-        *   `hover:` and `focus:` pseudo-classes are extensively used for interactive feedback.
-        *   `dark:` variants are used for basic dark mode support, assuming a global dark mode toggle would be implemented at a higher level (e.g., using `localStorage` or context API).
-5.  **Functionality:**
-    *   **State Management:** `useState` hooks manage input field values, validation errors, and the selected language.
-    *   **Event Handling:** `onChange`, `onSubmit`, and `onClick` handlers are implemented for form elements and buttons.
-    *   **Basic Form Validation:** The "Log in" button is disabled until both username and password fields have content. Simple error messages are displayed for empty fields.
-6.  **Accessibility (A11y):**
-    *   **ARIA Attributes:** `aria-label`, `aria-required`, `role="main"`, `role="contentinfo"`, `role="dialog"`, and `aria-labelledby` are strategically placed to improve screen reader compatibility.
-    *   **Keyboard Navigation:** Native interactive elements (`<button>`, `<a>`, `<input>`, `<select>`) inherently support keyboard navigation. `tabIndex` is used where present in the original, though often redundant for native interactive elements.
-    *   **Semantic HTML5:** Using `main`, `form`, `footer`, `label`, `input`, `button`, `a`, `img`, `p`, `span`, and `div` to ensure a meaningful document structure.
-    *   `sr-only` class is used for visually hidden labels that provide context to screen readers.
-    *   `alt` attributes are provided for all images.
-7.  **Performance Considerations:**
-    *   `loading="lazy"` is added to images to defer loading of off-screen images.
-    *   React's virtual DOM minimizes direct DOM manipulations.
-    *   Tailwind's utility-first approach generally leads to optimized CSS.
-    *   The numerous `<link rel="preload">` tags from the original HTML are omitted as they are typically handled by a React build system (like Webpack or Vite) for optimal asset delivery.
+  <style>
+    /* Base styles - Mobile First */
+    :root {
+      --color-black: #000;
+      --color-white: #fff;
+      --color-gray-300: #d1d5db;
+      --color-gray-400: #9ca3af;
+      --color-gray-500: #6b7280;
+      --color-gray-700: #374151;
+      --color-gray-800: #1f2937;
+      --color-gray-900: #111827;
+      --color-orange-400: #fb923c;
+      --color-orange-500: #f97316;
+      --color-orange-600: #ea580c;
+      --color-amber-400: #fbbd24;
+      --color-amber-500: #f59e0b;
+      --color-amber-600: #d97706;
+      --color-yellow-500: #eab308;
+      --color-red-500: #ef4444;
+      --color-green-400: #4ade80;
+      --color-blue-500: #3b82f6;
+      --color-purple-500: #a855f7;
 
-**Important Notes for Usage:**
+      /* Spacing units (Tailwind defaults) */
+      --spacing-px: 1px;
+      --spacing-0: 0px;
+      --spacing-1: 0.25rem;
+      /* 4px */
+      --spacing-1-5: 0.375rem;
+      /* 6px */
+      --spacing-2: 0.5rem;
+      /* 8px */
+      --spacing-3: 0.75rem;
+      /* 12px */
+      --spacing-4: 1rem;
+      /* 16px */
+      --spacing-5: 1.25rem;
+      /* 20px */
+      --spacing-6: 1.5rem;
+      /* 24px */
+      --spacing-8: 2rem;
+      /* 32px */
+      --spacing-9: 2.25rem;
+      /* 36px */
+      --spacing-10: 2.5rem;
+      /* 40px */
+      --spacing-12: 3rem;
+      /* 48px */
+      --spacing-16: 4rem;
+      /* 64px */
+      --spacing-20: 5rem;
+      /* 80px */
+      --spacing-40: 10rem;
+      /* 160px */
 
-*   **Tailwind CSS Setup:** This JSX code assumes you have Tailwind CSS configured in your React project. You'll need to run `npm install -D tailwindcss postcss autoprefixer` and then `npx tailwindcss init -p` to set it up, ensuring your `tailwind.config.js` scans your JSX files.
-*   **Root Element:** This `Result` component should be rendered inside your main `index.js` or `App.js` file in a React application. The global `<html>` and `<head>` elements from the original HTML are managed by your `public/index.html` and optionally by libraries like React Helmet for dynamic meta tags.
-*   **Functionality Stubs:** Login, Facebook login, and language change handlers are currently stubs (`console.log` and `alert`). In a real application, these would interact with your backend API or global state management.
-*   **Image Paths:** The `src` attributes for images are kept as external CDN links from the original HTML. For a true production app, these images would typically be downloaded, optimized, and imported as local assets to leverage your build system's optimizations.
-*   **Dark Mode:** The `dark:` variants are included, but you'd need a mechanism (e.g., a theme context or `localStorage`) to toggle the `dark` class on the `<html>` or root `div` element for dark mode to activate.
+      /* Font sizes (Tailwind defaults) */
+      --font-size-xs: 0.75rem;
+      /* 12px */
+      --font-size-sm: 0.875rem;
+      /* 14px */
+      --font-size-base: 1rem;
+      /* 16px */
+      --font-size-lg: 1.125rem;
+      /* 18px */
+      --font-size-xl: 1.25rem;
+      /* 20px */
+      --font-size-2xl: 1.5rem;
+      /* 24px */
+      --font-size-3xl: 1.875rem;
+      /* 30px */
+      --font-size-4xl: 2.25rem;
+      /* 36px */
+      --font-size-5xl: 3rem;
+      /* 48px */
+      --font-size-6xl: 3.75rem;
+      /* 60px */
+      --font-size-8xl: 6rem;
+      /* 96px */
+      --font-size-12xl: 12rem;
+      /* 192px */
 
-```jsx
-// src/components/Result.jsx (or a similar path in your React project)
+      /* Line heights */
+      --line-height-tight: 1.25;
+      --line-height-none: 1;
 
-import React, { useState, useEffect } from 'react';
+      /* Border radius */
+      --rounded-md: 0.375rem;
+      --rounded-lg: 0.5rem;
+      --rounded-xl: 0.75rem;
+      --rounded-full: 9999px;
 
-// --- Reusable SVG Icon Components ---
-// Extracted for cleaner JSX and potential reusability across the application.
-
-/**
- * Facebook Login Icon SVG
- * @param {object} props - Component props
- * @param {string} props.className - Tailwind CSS classes for styling the SVG
- */
-const FacebookIcon = ({ className }) => (
-  <svg
-    aria-label="Log in with Facebook"
-    className={className}
-    fill="currentColor"
-    height="20"
-    role="img"
-    viewBox="0 0 16 16"
-    width="20"
-  >
-    <title>Log in with Facebook</title>
-    {/* Clip path definition to prevent fill issues on complex paths */}
-    <g clipPath="url(#facebook-icon-clip)">
-      <path d="M8 0C3.6 0 0 3.6 0 8c0 4 2.9 7.3 6.8 7.9v-5.6h-2V8h2V6.2c0-2 1.2-3.1 3-3.1.9 0 1.8.2 1.8.2v2h-1c-1 0-1.3.6-1.3 1.3V8h2.2l-.4 2.3H9.2v5.6C13.1 15.3 16 12 16 8c0-4.4-3.6-8-8-8Z" fill="currentColor"></path>
-    </g>
-    <defs>
-      <clipPath id="facebook-icon-clip">
-        <rect fill="currentColor" height="16" width="16"></rect>
-      </clipPath>
-    </defs>
-  </svg>
-);
-
-/**
- * Down Chevron Icon SVG (rotated for language selector)
- * @param {object} props - Component props
- * @param {string} props.className - Tailwind CSS classes for styling the SVG
- */
-const ChevronDownIcon = ({ className }) => (
-  <svg
-    aria-label="Down chevron icon"
-    className={className}
-    fill="currentColor"
-    height="12"
-    role="img"
-    viewBox="0 0 24 24"
-    width="12"
-  >
-    <title>Down chevron icon</title>
-    <path d="M21 17.502a.997.997 0 0 1-.707-.293L12 8.913l-8.293 8.296a1 1 0 1 1-1.414-1.414l9-9.004a1.03 1.03 0 0 1 1.414 0l9 9.004A1 1 0 0 1 21 17.502Z"></path>
-  </svg>
-);
-
-/**
- * Close Icon SVG
- * @param {object} props - Component props
- * @param {string} props.className - Tailwind CSS classes for styling the SVG
- */
-const CloseIcon = ({ className }) => (
-  <svg
-    aria-label="Close"
-    className={className}
-    fill="currentColor"
-    height="12"
-    role="img"
-    viewBox="0 0 24 24"
-    width="12"
-  >
-    <title>Close</title>
-    <polyline fill="none" points="20.643 3.357 12 12 3.353 20.647" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3"></polyline>
-    <line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" x1="20.649" x2="3.354" y1="20.649" y2="3.354"></line>
-  </svg>
-);
-
-// --- InputField Component ---
-// Custom input field with floating label and basic error display.
-// Enhances UX and accessibility.
-const InputField = ({ label, type, name, value, onChange, error, ariaLabel, ariaRequired }) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const showLabel = isFocused || value; // Label floats up if focused or has value
-
-  return (
-    <div className="relative mb-4">
-      {/* SR-only label for accessibility, actual label effect handled by span */}
-      <label htmlFor={name} className="sr-only">
-        {ariaLabel}
-      </label>
-      <input
-        id={name}
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        aria-label={ariaLabel}
-        aria-required={ariaRequired}
-        autoCapitalize="off" // Per original HTML
-        autoCorrect="off"   // Per original HTML
-        maxLength="75"      // Per original HTML
-        className={`
-          peer w-full px-3 pt-4 pb-1
-          border ${error ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}
-          rounded-md outline-none
-          focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400
-          dark:bg-gray-700 dark:text-white
-          text-sm transition-all duration-200 ease-in-out
-          placeholder-transparent focus:placeholder-gray-400
-        `}
-        placeholder={label} // Placeholder text for browsers that don't support peer or as a fallback
-      />
-      {/* Visual floating label (moves above input on focus/value) */}
-      <span
-        className={`
-          absolute left-3 ${showLabel ? 'top-1 text-xs' : 'top-1/2 text-sm -translate-y-1/2'}
-          ${error ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'}
-          peer-focus:top-1 peer-focus:text-xs
-          peer-focus:${error ? 'text-red-500' : 'text-blue-500 dark:text-blue-400'}
-          transition-all duration-200 ease-in-out pointer-events-none
-        `}
-        aria-hidden="true" // Hide from screen readers as input has aria-label
-      >
-        {label}
-      </span>
-      {/* Error message display */}
-      {error && (
-        <p className="text-red-500 text-xs mt-1" role="alert">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-};
-
-// --- Main Result Component ---
-const Result = () => {
-  // State for form inputs
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  // State for input validation errors
-  const [usernameError, setUsernameError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  // State for language selection
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
-  // State for controlling visibility of the terms banner
-  const [showTermsBanner, setShowTermsBanner] = useState(true);
-
-  // Derived state: check if login form inputs are valid for button enablement
-  const isLoginFormValid = username.length > 0 && password.length > 0;
-
-  // Handle form submission
-  const handleLoginSubmit = (e) => {
-    e.preventDefault(); // Prevent default browser form submission
-    let isValid = true;
-
-    // Basic client-side validation
-    if (!username.trim()) {
-      setUsernameError('Username cannot be empty.');
-      isValid = false;
-    } else {
-      setUsernameError('');
+      /* Box shadow */
+      --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
 
-    if (!password.trim()) {
-      setPasswordError('Password cannot be empty.');
-      isValid = false;
-    } else {
-      setPasswordError('');
+    /* Utility classes equivalent to Tailwind */
+    .container {
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: var(--spacing-4);
+      padding-right: var(--spacing-4);
     }
 
-    if (isValid) {
-      console.log('Login attempt:', { username, password });
-      alert('Login functionality not implemented. Check console for form data.');
-      // TODO: In a real application, you would send this data to an API endpoint
-      // and handle success/failure, redirect, show loading state, etc.
+    .mx-auto {
+      margin-left: auto;
+      margin-right: auto;
     }
-  };
 
-  // Handle Facebook login button click
-  const handleFacebookLogin = () => {
-    console.log('Initiating login with Facebook...');
-    alert('Facebook login functionality not implemented.');
-    // TODO: Integrate with Facebook SDK or OAuth flow
-  };
+    .px-3 {
+      padding-left: var(--spacing-3);
+      padding-right: var(--spacing-3);
+    }
 
-  // Handle language selection change
-  const handleLanguageChange = (e) => {
-    setSelectedLanguage(e.target.value);
-    console.log('Language changed to:', e.target.value);
-    // TODO: In a real application, this would trigger i18n (internationalization) changes
-    // to update the displayed text content.
-  };
+    .py-1-5 {
+      padding-top: var(--spacing-1-5);
+      padding-bottom: var(--spacing-1-5);
+    }
 
-  // Example list of languages for the dropdown
-  const languages = [
-    { value: 'af', label: 'Afrikaans' }, { value: 'ar', label: 'العربية' },
-    { value: 'cs', label: 'Čeština' }, { value: 'da', label: 'Dansk' },
-    { value: 'de', label: 'Deutsch' }, { value: 'el', label: 'Ελληνικά' },
-    { value: 'en', label: 'English' }, { value: 'en-gb', label: 'English (UK)' },
-    { value: 'es', label: 'Español (España)' }, { value: 'es-la', label: 'Español' },
-    { value: 'fa', label: 'فارسی' }, { value: 'fi', label: 'Suomi' },
-    { value: 'fr', label: 'Français' }, { value: 'he', label: 'עברית' },
-    { value: 'id', label: 'Bahasa Indonesia' }, { value: 'it', label: 'Italiano' },
-    { value: 'ja', label: '日本語' }, { value: 'ko', label: '한국어' },
-    { value: 'ms', label: 'Bahasa Melayu' }, { value: 'nb', label: 'Norsk' },
-    { value: 'nl', label: 'Nederlands' }, { value: 'pl', label: 'Polski' },
-    { value: 'pt-br', label: 'Português (Brasil)' }, { value: 'pt', label: 'Português (Portugal)' },
-    { value: 'ru', label: 'Русский' }, { value: 'sv', label: 'Svenska' },
-    { value: 'th', label: 'ภาษาไทย' }, { value: 'tl', label: 'Filipino' },
-    { value: 'tr', label: 'Türkçe' }, { value: 'zh-cn', label: '中文(简体)' },
-    { value: 'zh-tw', label: '中文(台灣)' }, { value: 'bn', label: 'বাংলা' },
-    { value: 'gu', label: 'ગુજરાતી' }, { value: 'hi', label: 'हिन्दी' },
-    { value: 'hr', label: 'Hrvatski' }, { value: 'hu', label: 'Magyar' },
-    { value: 'kn', label: 'ಕನ್ನಡ' }, { value: 'ml', label: 'മലയാളം' },
-    { value: 'mr', label: 'मराठी' }, { value: 'ne', label: 'नेपाली' },
-    { value: 'pa', label: 'ਪੰਜਾਬੀ' }, { value: 'si', label: 'සිංහල' },
-    { value: 'sk', label: 'Slovenčina' }, { value: 'ta', label: 'தமிழ்' },
-    { value: 'te', label: 'తెలుగు' }, { value: 'ur', label: 'اردو' },
-    { value: 'vi', label: 'Tiếng Việt' }, { value: 'zh-hk', label: '中文(香港)' },
-    { value: 'bg', label: 'Български' }, { value: 'fr-ca', label: 'Français (Canada)' },
-    { value: 'ro', label: 'Română' }, { value: 'sr', label: 'Српски' },
-    { value: 'uk', label: 'Українська' },
-  ];
+    .py-2 {
+      padding-top: var(--spacing-2);
+      padding-bottom: var(--spacing-2);
+    }
 
-  return (
-    // Main container for the entire page, providing background color and central alignment
-    <div className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white flex flex-col items-center justify-center py-8 px-4 transition-colors duration-300">
-      {/* Main content area: flex container for left image and right form section */}
-      <main className="flex flex-col lg:flex-row items-center justify-center w-full max-w-5xl gap-8">
-        {/* Left Section: Decorative Screenshot Image */}
-        {/* Hidden on small screens, displayed as flex on large screens */}
-        <div className="hidden lg:flex items-center justify-center flex-1 min-w-0">
-          <img
-            src="https://www.instagram.com/images/instagram/xig/homepage/screenshots_v3/instagram-web-lox-image.png"
-            alt="Instagram app screenshot on phone"
-            className="h-[581px] object-contain"
-            aria-hidden="true" // Mark as decorative for screen readers
-            loading="lazy" // Optimize image loading
-          />
-        </div>
+    .py-3 {
+      padding-top: var(--spacing-3);
+      padding-bottom: var(--spacing-3);
+    }
 
-        {/* Right Section: Login and Signup Form */}
-        <div className="flex flex-col items-center flex-1 max-w-sm w-full">
-          {/* Login Card Container */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-300 dark:border-gray-700 p-8 pt-10 pb-6 w-full flex flex-col items-center mb-2 animate-fade-in-up">
-            {/* Instagram Logo */}
-            <div className="mb-8 mt-2">
-              <img
-                src="https://static.cdninstagram.com/rsrc.php/v4/yB/r/E7m8ZCMOFDS.png"
-                alt="Instagram logo"
-                className="w-[175px] h-[51px] object-contain dark:filter dark:invert" // Invert for dark mode visibility
-              />
+    .py-4 {
+      padding-top: var(--spacing-4);
+      padding-bottom: var(--spacing-4);
+    }
+
+    .py-6 {
+      padding-top: var(--spacing-6);
+      padding-bottom: var(--spacing-6);
+    }
+
+    .py-8 {
+      padding-top: var(--spacing-8);
+      padding-bottom: var(--spacing-8);
+    }
+
+    .py-20 {
+      padding-top: var(--spacing-20);
+      padding-bottom: var(--spacing-20);
+    }
+
+    .pt-20 {
+      padding-top: var(--spacing-20);
+    }
+
+    .p-2 {
+      padding: var(--spacing-2);
+    }
+
+    .p-3 {
+      padding: var(--spacing-3);
+    }
+
+    .p-4 {
+      padding: var(--spacing-4);
+    }
+
+    .p-5 {
+      padding: var(--spacing-5);
+    }
+
+    .p-6 {
+      padding: var(--spacing-6);
+    }
+
+    .p-8 {
+      padding: var(--spacing-8);
+    }
+
+    .min-h-screen {
+      min-height: 100vh;
+    }
+
+    .bg-black {
+      background-color: var(--color-black);
+    }
+
+    .bg-black\/50 {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .bg-black\/70 {
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    .text-white {
+      color: var(--color-white);
+    }
+
+    .text-gray-300 {
+      color: var(--color-gray-300);
+    }
+
+    .text-gray-400 {
+      color: var(--color-gray-400);
+    }
+
+    .text-gray-500 {
+      color: var(--color-gray-500);
+    }
+
+    .text-orange-400 {
+      color: var(--color-orange-400);
+    }
+
+    .text-orange-500 {
+      color: var(--color-orange-500);
+    }
+
+    .text-amber-400 {
+      color: var(--color-amber-400);
+    }
+
+    .text-amber-500 {
+      color: var(--color-amber-500);
+    }
+
+    .text-red-500 {
+      color: var(--color-red-500);
+    }
+
+    .text-green-400 {
+      color: var(--color-green-400);
+    }
+
+    .text-xs {
+      font-size: var(--font-size-xs);
+    }
+
+    .text-sm {
+      font-size: var(--font-size-sm);
+    }
+
+    .text-base {
+      font-size: var(--font-size-base);
+    }
+
+    .text-lg {
+      font-size: var(--font-size-lg);
+    }
+
+    .text-xl {
+      font-size: var(--font-size-xl);
+    }
+
+    .text-2xl {
+      font-size: var(--font-size-2xl);
+    }
+
+    .text-3xl {
+      font-size: var(--font-size-3xl);
+    }
+
+    .text-4xl {
+      font-size: var(--font-size-4xl);
+    }
+
+    .text-5xl {
+      font-size: var(--font-size-5xl);
+    }
+
+    .text-6xl {
+      font-size: var(--font-size-6xl);
+    }
+
+    .font-bold {
+      font-weight: 700;
+    }
+
+    .font-medium {
+      font-weight: 500;
+    }
+
+    .font-semibold {
+      font-weight: 600;
+    }
+
+    .font-mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .leading-tight {
+      line-height: var(--line-height-tight);
+    }
+
+    .leading-none {
+      line-height: var(--line-height-none);
+    }
+
+    .tracking-tighter {
+      letter-spacing: -0.05em;
+    }
+
+    .rounded-md {
+      border-radius: var(--rounded-md);
+    }
+
+    .rounded-lg {
+      border-radius: var(--rounded-lg);
+    }
+
+    .rounded-xl {
+      border-radius: var(--rounded-xl);
+    }
+
+    .rounded-full {
+      border-radius: var(--rounded-full);
+    }
+
+    .border {
+      border-width: 1px;
+      border-style: solid;
+    }
+
+    .border-none {
+      border: none;
+    }
+
+    .border-gray-700 {
+      border-color: var(--color-gray-700);
+    }
+
+    .border-gray-800 {
+      border-color: var(--color-gray-800);
+    }
+
+    .border-orange-500 {
+      border-color: var(--color-orange-500);
+    }
+
+    .border-orange-500\/30 {
+      border-color: rgba(249, 115, 22, 0.3);
+    }
+
+    .shadow-xs {
+      box-shadow: var(--shadow-xs);
+    }
+
+    .shadow-lg {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .shadow-xl {
+      box-shadow: var(--shadow-xl);
+    }
+
+    .flex {
+      display: flex;
+    }
+
+    .items-center {
+      align-items: center;
+    }
+
+    .justify-between {
+      justify-content: space-between;
+    }
+
+    .justify-center {
+      justify-content: center;
+    }
+
+    .justify-around {
+      justify-content: space-around;
+    }
+
+    .flex-col {
+      flex-direction: column;
+    }
+
+    .flex-row {
+      flex-direction: row;
+    }
+
+    .flex-wrap {
+      flex-wrap: wrap;
+    }
+
+    .flex-shrink-0 {
+      flex-shrink: 0;
+    }
+
+    .flex-1 {
+      flex: 1 1 0%;
+    }
+
+    .flex-grow {
+      flex-grow: 1;
+    }
+
+    .gap-1 {
+      gap: var(--spacing-1);
+    }
+
+    .gap-1-5 {
+      gap: var(--spacing-1-5);
+    }
+
+    .gap-2 {
+      gap: var(--spacing-2);
+    }
+
+    .gap-3 {
+      gap: var(--spacing-3);
+    }
+
+    .gap-4 {
+      gap: var(--spacing-4);
+    }
+
+    .gap-6 {
+      gap: var(--spacing-6);
+    }
+
+    .gap-8 {
+      gap: var(--spacing-8);
+    }
+
+    .gap-12 {
+      gap: var(--spacing-12);
+    }
+
+    .space-x-4> :not([hidden])~ :not([hidden]) {
+      margin-left: var(--spacing-4);
+    }
+
+    .space-x-8> :not([hidden])~ :not([hidden]) {
+      margin-left: var(--spacing-8);
+    }
+
+    .space-y-3> :not([hidden])~ :not([hidden]) {
+      margin-top: var(--spacing-3);
+    }
+
+    .space-y-4> :not([hidden])~ :not([hidden]) {
+      margin-top: var(--spacing-4);
+    }
+
+    .grid {
+      display: grid;
+    }
+
+    .grid-cols-1 {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    .grid-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .order-1 {
+      order: 1;
+    }
+
+    .order-2 {
+      order: 2;
+    }
+
+    .w-auto {
+      width: auto;
+    }
+
+    .w-full {
+      width: 100%;
+    }
+
+    .w-fit {
+      width: fit-content;
+    }
+
+    .w-3 {
+      width: var(--spacing-3);
+    }
+
+    .w-4 {
+      width: var(--spacing-4);
+    }
+
+    .w-5 {
+      width: var(--spacing-5);
+    }
+
+    .w-6 {
+      width: var(--spacing-6);
+    }
+
+    .w-12 {
+      width: var(--spacing-12);
+    }
+
+    .w-20 {
+      width: var(--spacing-20);
+    }
+
+    .h-auto {
+      height: auto;
+    }
+
+    .h-full {
+      height: 100%;
+    }
+
+    .h-px {
+      height: var(--spacing-px);
+    }
+
+    .h-0-5 {
+      height: 0.125rem;
+    }
+
+    /* 2px */
+    .h-1 {
+      height: var(--spacing-1);
+    }
+
+    .h-2 {
+      height: var(--spacing-2);
+    }
+
+    .h-3 {
+      height: var(--spacing-3);
+    }
+
+    .h-4 {
+      height: var(--spacing-4);
+    }
+
+    .h-5 {
+      height: var(--spacing-5);
+    }
+
+    .h-6 {
+      height: var(--spacing-6);
+    }
+
+    .h-8 {
+      height: var(--spacing-8);
+    }
+
+    .h-12 {
+      height: var(--spacing-12);
+    }
+
+    .h-16 {
+      height: var(--spacing-16);
+    }
+
+    .h-auto {
+      height: auto;
+    }
+
+    .h-9 {
+      height: 2.25rem;
+    }
+
+    /* 36px */
+    .h-80 {
+      height: 20rem;
+    }
+
+    /* 320px */
+    .h-64 {
+      height: 16rem;
+    }
+
+    /* 256px */
+    .h-100 {
+      height: 25rem;
+    }
+
+    /* 400px */
+    .h-280px {
+      height: 280px;
+    }
+
+    .min-h-\[400px\] {
+      min-height: 400px;
+    }
+
+    .h-\[720px\] {
+      height: 720px;
+    }
+
+    .max-w-xl {
+      max-width: 36rem;
+    }
+
+    /* 576px */
+    .max-w-2xl {
+      max-width: 42rem;
+    }
+
+    /* 672px */
+    .max-w-3xl {
+      max-width: 48rem;
+    }
+
+    /* 768px */
+    .max-w-4xl {
+      max-width: 56rem;
+    }
+
+    /* 896px */
+    .max-w-\[300px\] {
+      max-width: 300px;
+    }
+
+    .mb-1 {
+      margin-bottom: var(--spacing-1);
+    }
+
+    .mb-2 {
+      margin-bottom: var(--spacing-2);
+    }
+
+    .mb-3 {
+      margin-bottom: var(--spacing-3);
+    }
+
+    .mb-4 {
+      margin-bottom: var(--spacing-4);
+    }
+
+    .mb-6 {
+      margin-bottom: var(--spacing-6);
+    }
+
+    .mb-8 {
+      margin-bottom: var(--spacing-8);
+    }
+
+    .mb-12 {
+      margin-bottom: var(--spacing-12);
+    }
+
+    .mb-16 {
+      margin-bottom: var(--spacing-16);
+    }
+
+    .mt-4 {
+      margin-top: var(--spacing-4);
+    }
+
+    .mt-10 {
+      margin-top: var(--spacing-10);
+    }
+
+    .mt-16 {
+      margin-top: var(--spacing-16);
+    }
+
+    .mt-20 {
+      margin-top: var(--spacing-20);
+    }
+
+    .mr-1 {
+      margin-right: var(--spacing-1);
+    }
+
+    .mr-2 {
+      margin-right: var(--spacing-2);
+    }
+
+    .ml-2 {
+      margin-left: var(--spacing-2);
+    }
+
+    .relative {
+      position: relative;
+    }
+
+    .absolute {
+      position: absolute;
+    }
+
+    .fixed {
+      position: fixed;
+    }
+
+    .inset-0 {
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    .top-0 {
+      top: 0;
+    }
+
+    .top-1 {
+      top: var(--spacing-1);
+    }
+
+    .top-2 {
+      top: var(--spacing-2);
+    }
+
+    .top-4 {
+      top: var(--spacing-4);
+    }
+
+    .top-10 {
+      top: var(--spacing-10);
+    }
+
+    .left-0 {
+      left: 0;
+    }
+
+    .left-2 {
+      left: var(--spacing-2);
+    }
+
+    .left-4 {
+      left: var(--spacing-4);
+    }
+
+    .left-10 {
+      left: var(--spacing-10);
+    }
+
+    .right-0 {
+      right: 0;
+    }
+
+    .right-1 {
+      right: var(--spacing-1);
+    }
+
+    .right-2 {
+      right: var(--spacing-2);
+    }
+
+    .right-4 {
+      right: var(--spacing-4);
+    }
+
+    .right-10 {
+      right: var(--spacing-10);
+    }
+
+    .bottom-0 {
+      bottom: 0;
+    }
+
+    .bottom-2 {
+      bottom: var(--spacing-2);
+    }
+
+    .bottom-4 {
+      bottom: var(--spacing-4);
+    }
+
+    .bottom-6 {
+      bottom: var(--spacing-6);
+    }
+
+    .bottom-10 {
+      bottom: var(--spacing-10);
+    }
+
+    .z-0 {
+      z-index: 0;
+    }
+
+    .z-10 {
+      z-index: 10;
+    }
+
+    .z-20 {
+      z-index: 20;
+    }
+
+    .z-50 {
+      z-index: 50;
+    }
+
+    .overflow-hidden {
+      overflow: hidden;
+    }
+
+    .overflow-x-auto {
+      overflow-x: auto;
+    }
+
+    .pointer-events-none {
+      pointer-events: none;
+    }
+
+    .line-through {
+      text-decoration: line-through;
+    }
+
+    .text-transparent {
+      color: transparent;
+    }
+
+    .bg-clip-text {
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    /* Custom gradients */
+    .bg-gradient-to-r {
+      background-image: linear-gradient(to right, var(--tw-gradient-stops));
+    }
+
+    .bg-gradient-to-br {
+      background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+    }
+
+    .bg-gradient-to-t {
+      background-image: linear-gradient(to top, var(--tw-gradient-stops));
+    }
+
+    .bg-gradient-to-b {
+      background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+    }
+
+    .from-orange-500 {
+      --tw-gradient-from: var(--color-orange-500);
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(249, 115, 22, 0));
+    }
+
+    .to-amber-500 {
+      --tw-gradient-to: var(--color-amber-500);
+    }
+
+    .from-orange-400 {
+      --tw-gradient-from: var(--color-orange-400);
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(251, 146, 60, 0));
+    }
+
+    .to-yellow-500 {
+      --tw-gradient-to: var(--color-yellow-500);
+    }
+
+    .via-amber-500 {
+      --tw-gradient-via: var(--color-amber-500);
+    }
+
+    .from-orange-500\/10 {
+      --tw-gradient-from: rgba(249, 115, 22, 0.1);
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(249, 115, 22, 0));
+    }
+
+    .to-amber-500\/10 {
+      --tw-gradient-to: rgba(245, 158, 11, 0.1);
+    }
+
+    .from-orange-500\/20 {
+      --tw-gradient-from: rgba(249, 115, 22, 0.2);
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(249, 115, 22, 0));
+    }
+
+    .to-amber-500\/20 {
+      --tw-gradient-to: rgba(245, 158, 11, 0.2);
+    }
+
+    .from-orange-500\/30 {
+      --tw-gradient-from: rgba(249, 115, 22, 0.3);
+      --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(249, 115, 22, 0));
+    }
+
+    .to-amber-500\/30 {
+      --tw-gradient-to: rgba(245, 158, 11, 0.3);
+    }
+
+    .blur-\[100px\] {
+      filter: blur(100px);
+    }
+
+    .blur-\[120px\] {
+      filter: blur(120px);
+    }
+
+    .blur-lg {
+      filter: blur(16px);
+    }
+
+    .blur-md {
+      filter: blur(8px);
+    }
+
+    .backdrop-blur-sm {
+      backdrop-filter: blur(4px);
+    }
+
+    .backdrop-blur-md {
+      backdrop-filter: blur(8px);
+    }
+
+    .opacity-0 {
+      opacity: 0;
+    }
+
+    .opacity-5 {
+      opacity: 0.05;
+    }
+
+    .opacity-10 {
+      opacity: 0.1;
+    }
+
+    .opacity-20 {
+      opacity: 0.2;
+    }
+
+    .opacity-30 {
+      opacity: 0.3;
+    }
+
+    .opacity-40 {
+      opacity: 0.4;
+    }
+
+    .opacity-50 {
+      opacity: 0.5;
+    }
+
+    .opacity-70 {
+      opacity: 0.7;
+    }
+
+    .opacity-75 {
+      opacity: 0.75;
+    }
+
+    .opacity-100 {
+      opacity: 1;
+    }
+
+    .transition-all {
+      transition-property: all;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 0.15s;
+    }
+
+    .transition-colors {
+      transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 0.15s;
+    }
+
+    .transition-opacity {
+      transition-property: opacity;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 0.3s;
+    }
+
+    .transition-\[color,
+    box-shadow\] {
+      transition-property: color, box-shadow;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 0.15s;
+    }
+
+    .duration-300 {
+      transition-duration: 0.3s;
+    }
+
+    .object-cover {
+      object-fit: cover;
+    }
+
+    .aspect-video {
+      aspect-ratio: 16 / 9;
+    }
+
+    .aspect-\[4\/3\] {
+      aspect-ratio: 4 / 3;
+    }
+
+    .aspect-\[9\/19\] {
+      aspect-ratio: 9 / 19;
+    }
+
+    .cursor-pointer {
+      cursor: pointer;
+    }
+
+    .w-0 {
+      width: 0;
+    }
+
+    .outline-none {
+      outline: 2px solid transparent;
+      outline-offset: 2px;
+    }
+
+    .focus-visible\:border-ring:focus-visible {
+      border-color: var(--color-orange-500);
+    }
+
+    .focus-visible\:ring-ring\/50:focus-visible {
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.5);
+    }
+
+    .focus-visible\:ring-\[3px\]:focus-visible {
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.5);
+    }
+
+    .aria-invalid\:ring-destructive\/20[aria-invalid="true"] {
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+    }
+
+    .aria-invalid\:border-destructive[aria-invalid="true"] {
+      border-color: var(--color-red-500);
+    }
+
+    .group:hover .group-hover\:w-full {
+      width: 100%;
+    }
+
+    .group:hover .group-hover\:opacity-100 {
+      opacity: 1;
+    }
+
+    .group:hover .group-hover\:from-orange-600 {
+      --tw-gradient-from: var(--color-orange-600);
+    }
+
+    .group:hover .group-hover\:to-amber-600 {
+      --tw-gradient-to: var(--color-amber-600);
+    }
+
+    .hover\:text-white:hover {
+      color: var(--color-white);
+    }
+
+    .hover\:bg-orange-600:hover {
+      background-color: var(--color-orange-600);
+    }
+
+    .hover\:bg-orange-500\/10:hover {
+      background-color: rgba(249, 115, 22, 0.1);
+    }
+
+    .hover\:from-orange-600:hover {
+      --tw-gradient-from: var(--color-orange-600);
+    }
+
+    .hover\:to-amber-600:hover {
+      --tw-gradient-to: var(--color-amber-600);
+    }
+
+    .hover\:bg-primary\/90:hover {
+      background-color: rgba(249, 115, 22, 0.9);
+    }
+
+    /* primary is orange-500 here */
+    .hover\:text-orange-400:hover {
+      color: var(--color-orange-400);
+    }
+
+    .disabled\:pointer-events-none:disabled {
+      pointer-events: none;
+    }
+
+    .disabled\:opacity-50:disabled {
+      opacity: 0.5;
+    }
+
+    .antialiased {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .max-w-\[100\%\] {
+      max-width: 100%;
+    }
+
+    .overflow-wrap-break-word {
+      overflow-wrap: break-word;
+    }
+
+    .display-block {
+      display: block;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .line-clamp-1 {
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Specific overrides for button-like elements from original HTML for fidelity */
+    button[data-slot="button"] {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-2);
+      white-space: nowrap;
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      transition-property: all;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 0.15s;
+      border-radius: var(--rounded-md);
+      outline: none;
+      cursor: pointer;
+    }
+
+    button[data-slot="button"][has-\[>svg\]] {
+      padding-left: var(--spacing-3);
+      padding-right: var(--spacing-3);
+    }
+
+    button[data-slot="button"]>svg:not([class*='size-']) {
+      width: var(--spacing-4);
+      height: var(--spacing-4);
+    }
+
+    button[data-slot="button"]>svg {
+      flex-shrink: 0;
+    }
+
+    /* Header specific */
+    .header-bg-scrolled {
+      background-color: var(--color-black);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Mobile specific styles */
+    @media (max-width: 767px) {
+      .sm\:flex-row {
+        flex-direction: row;
+      }
+    }
+
+    /* Medium devices (md) */
+    @media (min-width: 768px) {
+      .container {
+        max-width: 768px;
+      }
+
+      .px-4 {
+        padding-left: var(--spacing-4);
+        padding-right: var(--spacing-4);
+      }
+
+      .py-4 {
+        padding-top: var(--spacing-4);
+        padding-bottom: var(--spacing-4);
+      }
+
+      .md\:flex {
+        display: flex;
+      }
+
+      .md\:hidden {
+        display: none;
+      }
+
+      .md\:text-4xl {
+        font-size: var(--font-size-4xl);
+      }
+
+      .md\:text-5xl {
+        font-size: var(--font-size-5xl);
+      }
+
+      .md\:text-6xl {
+        font-size: var(--font-size-6xl);
+      }
+
+      .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .md\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .md\:grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .md\:grid-cols-5 {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .md\:col-span-2 {
+        grid-column: span 2 / span 2;
+      }
+
+      .md\:col-span-3 {
+        grid-column: span 3 / span 3;
+      }
+
+      .md\:order-1 {
+        order: 1;
+      }
+
+      .md\:order-2 {
+        order: 2;
+      }
+
+      .md\:p-8 {
+        padding: var(--spacing-8);
+      }
+
+      .md\:h-80 {
+        height: 20rem;
+      }
+
+      .md\:block {
+        display: block;
+      }
+    }
+
+    /* Large devices (lg) */
+    @media (min-width: 1024px) {
+      .container {
+        max-width: 1024px;
+      }
+
+      .lg\:text-\[12rem\] {
+        font-size: 12rem;
+      }
+
+      .lg\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    /* XL devices (xl) */
+    @media (min-width: 1280px) {
+      .container {
+        max-width: 1280px;
+      }
+    }
+
+    /* 2XL devices (2xl) */
+    @media (min-width: 1536px) {
+      .container {
+        max-width: 1536px;
+      }
+    }
+
+    /* Animation classes */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .fade-in.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .slide-in-left {
+      opacity: 0;
+      transform: translateX(-50px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .slide-in-left.is-visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .slide-in-right {
+      opacity: 0;
+      transform: translateX(50px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .slide-in-right.is-visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .scale-in {
+      opacity: 0;
+      transform: scale(0.9);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .scale-in.is-visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .w-expand {
+      width: 0;
+      transition: width 0.8s cubic-bezier(0.65, 0.05, 0.36, 1);
+    }
+
+    .w-expand.is-visible {
+      width: var(--spacing-20);
+    }
+
+    /* Specific decorative elements */
+    .decorative-dot {
+      position: absolute;
+      border-radius: var(--rounded-full);
+      background-color: rgba(249, 115, 22, 0.3);
+      /* orange-400/30 */
+      pointer-events: none;
+      /* Added fixed size for simplicity, original had dynamic sizes */
+      width: 4px;
+      height: 4px;
+    }
+
+    .decorative-text {
+      position: absolute;
+      font-size: var(--font-size-xs);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      color: rgba(249, 115, 22, 0.2);
+      /* orange-500/20 */
+      opacity: 1;
+      /* Keep visible by default */
+      pointer-events: none;
+    }
+
+    .youtube-channel-text {
+      color: rgba(249, 115, 22, 0.4);
+      /* orange-500/40 */
+    }
+  </style>
+</head>
+
+<body class="antialiased"
+  style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">
+  <main class="min-h-screen bg-black text-white">
+    <!-- Header -->
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent">
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+          <a class="flex items-center gap-2" href="/" aria-label="ChaiCode Home">
+            <div class="h-8">
+              <img alt="ChaiCode" width="180" height="22" decoding="async" loading="lazy" class="h-full w-auto"
+                src="https://www.chaicode.com/chaicode-white.svg" style="color: transparent;">
             </div>
-
-            {/* Login Form */}
-            <form id="loginForm" onSubmit={handleLoginSubmit} className="w-full" aria-label="Login form">
-              {/* Username/Email Input Field */}
-              <InputField
-                label="Phone number, username, or email"
-                type="text"
-                name="username"
-                value={username}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                  setUsernameError(''); // Clear error when user types
-                }}
-                error={usernameError}
-                ariaLabel="Phone number, username, or email"
-                ariaRequired={true}
-              />
-              {/* Password Input Field */}
-              <InputField
-                label="Password"
-                type="password"
-                name="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setPasswordError(''); // Clear error when user types
-                }}
-                error={passwordError}
-                ariaLabel="Password"
-                ariaRequired={true}
-              />
-
-              {/* Login Button */}
-              <button
-                type="submit"
-                className={`
-                  w-full py-2 px-4 mt-2
-                  bg-blue-500 hover:bg-blue-600 focus:bg-blue-700
-                  text-white font-semibold rounded-lg
-                  transition duration-200 ease-in-out
-                  ${!isLoginFormValid ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.01] active:scale-[0.99]'}
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
-                `}
-                disabled={!isLoginFormValid} // Disable button if inputs are empty
-                aria-disabled={!isLoginFormValid}
-              >
-                Log in
-              </button>
-
-              {/* OR Separator */}
-              <div className="relative flex items-center py-5">
-                <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
-                <span className="flex-shrink mx-4 text-gray-500 dark:text-gray-400 font-semibold text-sm">
-                  OR
-                </span>
-                <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+          </a>
+          <nav class="hidden md:flex items-center space-x-8" aria-label="Main navigation">
+            <a class="group flex items-center gap-1-5" href="#cohorts">
+              <div class="flex items-center gap-1-5 text-gray-300 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+                <span class="flex items-center">Cohorts</span>
               </div>
-
-              {/* Log in with Facebook Button */}
-              <button
-                type="button"
-                onClick={handleFacebookLogin}
-                className="
-                  w-full py-2 px-4
-                  bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700
-                  text-blue-800 dark:text-blue-400 font-semibold rounded-lg
-                  transition duration-200 ease-in-out
-                  flex items-center justify-center gap-2
-                  hover:scale-[1.01] active:scale-[0.99]
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400
-                "
-                aria-label="Log in with Facebook"
-              >
-                <FacebookIcon className="text-blue-600 dark:text-blue-400" />
-                <span className="text-sm">Log in with Facebook</span>
-              </button>
-
-              {/* Forgot Password Link */}
-              <div className="mt-4 text-center">
-                <a
-                  href="/accounts/password/reset/"
-                  role="link"
-                  tabIndex="0" // Explicit tabIndex as per original, though default usually fine
-                  className="text-xs text-blue-800 dark:text-blue-400 hover:underline transition-colors duration-200"
-                >
-                  Forgot password?
-                </a>
+              <div class="h-0-5 w-0 bg-orange-500 group-hover:w-full transition-all duration-300"></div>
+            </a>
+            <a class="group flex items-center gap-1-5" href="#udemy">
+              <div class="flex items-center gap-1-5 text-gray-300 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                  <path d="M12 7v14"></path>
+                  <path
+                    d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z">
+                  </path>
+                </svg>
+                <span class="flex items-center">Udemy</span>
               </div>
-            </form>
-          </div>
-
-          {/* Signup Prompt Card */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-300 dark:border-gray-700 p-4 text-center w-full mt-2 animate-fade-in-up">
-            <p className="text-sm">
-              Don't have an account?{' '}
-              <a
-                href="/accounts/emailsignup/"
-                role="link"
-                tabIndex="0"
-                className="text-blue-500 dark:text-blue-400 font-semibold hover:underline transition-colors duration-200"
-              >
-                Sign up
-              </a>
-            </p>
-          </div>
-
-          {/* Get the App Section */}
-          <div className="text-center mt-4 text-sm">
-            <p className="mb-4">Get the app.</p>
-            <div className="flex justify-center gap-2">
-              <a
-                aria-label="Download on the App Store"
-                href="https://apps.apple.com/app/instagram/id389801252?ct=igweb.undefined.badge&amp;mt=8&amp;pt=428156&amp;vt=lo"
-                rel="nofollow noreferrer"
-                role="link"
-                tabIndex="0"
-                target="_blank" // Opens in new tab
-                className="hover:scale-105 transition-transform duration-200"
-              >
-                <img
-                  alt="Download on the App Store"
-                  className="h-10"
-                  src="https://static.cdninstagram.com/rsrc.php/v4/yt/r/Yfc020c87j0.png"
-                  loading="lazy" // Optimize image loading
-                />
-              </a>
-              <a
-                aria-label="Get it on Google Play"
-                href="https://play.google.com/store/apps/details?id=com.instagram.android&amp;referrer=ig_mid%3DC493CF73-713C-4511-B442-BC98DF5DA0CD%26utm_content%3Dlo%26utm_source%3Dinstagramweb%26utm_medium%3Dbadge"
-                rel="nofollow noreferrer"
-                role="link"
-                tabIndex="0"
-                target="_blank" // Opens in new tab
-                className="hover:scale-105 transition-transform duration-200"
-              >
-                <img
-                  alt="Get it on Google Play"
-                  className="h-10"
-                  src="https://static.cdninstagram.com/rsrc.php/v4/yz/r/c5Rp7Ym-Klz.png"
-                  loading="lazy" // Optimize image loading
-                />
-              </a>
-            </div>
+              <div class="h-0-5 w-0 bg-orange-500 group-hover:w-full transition-all duration-300"></div>
+            </a>
+            <a class="group flex items-center gap-1-5" href="https://docs.chaicode.com" target="_blank"
+              rel="noopener noreferrer">
+              <div class="flex items-center gap-1-5 text-gray-300 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                  <polyline points="4 17 10 11 4 5"></polyline>
+                  <line x1="12" x2="20" y1="19" y2="19"></line>
+                </svg>
+                <span class="flex items-center">Docs</span>
+              </div>
+              <div class="h-0-5 w-0 bg-orange-500 group-hover:w-full transition-all duration-300"></div>
+            </a>
+            <a class="group flex items-center gap-1-5" href="/reviews">
+              <div class="flex items-center gap-1-5 text-gray-300 hover:text-white transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+                  <path
+                    d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z">
+                  </path>
+                </svg>
+                <span class="flex items-center">Reviews</span>
+              </div>
+              <div class="h-0-5 w-0 bg-orange-500 group-hover:w-full transition-all duration-300"></div>
+            </a>
+          </nav>
+          <div>
+            <a href="https://courses.chaicode.com/learn/account/signin" aria-label="Login to your account">
+              <button data-slot="button"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs h-9 px-4 py-2 has-[>svg]:px-3 bg-orange-500 hover:bg-orange-600 text-white border-none transition-colors">Login</button>
+            </a>
           </div>
         </div>
-      </main>
+      </div>
+    </header>
 
-      {/* Footer */}
-      <footer className="w-full max-w-5xl mt-12 p-4 text-xs text-gray-500 dark:text-gray-400" role="contentinfo">
-        {/* Footer Navigation Links */}
-        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-4">
-          {/* Each link is given standard a11y attributes and hover effects */}
-          <a href="https://about.meta.com/" rel="nofollow noopener noreferrer" target="_blank" className="hover:underline transition-colors duration-200">Meta</a>
-          <a href="https://about.instagram.com/" rel="nofollow noopener noreferrer" target="_blank" className="hover:underline transition-colors duration-200">About</a>
-          <a href="https://about.instagram.com/blog/" rel="nofollow noopener noreferrer" target="_blank" className="hover:underline transition-colors duration-200">Blog</a>
-          <a href="https://about.instagram.com/about-us/careers" rel="nofollow noopener noreferrer" target="_blank" className="hover:underline transition-colors duration-200">Jobs</a>
-          <a href="https://help.instagram.com/" rel="nofollow noopener noreferrer" target="_blank" className="hover:underline transition-colors duration-200">Help</a>
-          <a href="https://developers.facebook.com/docs/instagram" rel="nofollow noopener noreferrer" target="_blank" className="hover:underline transition-colors duration-200">API</a>
-          <a href="/legal/privacy/" role="link" tabIndex="0" className="hover:underline transition-colors duration-200">Privacy</a>
-          <a href="/legal/terms/" role="link" tabIndex="0" className="hover:underline transition-colors duration-200">Terms</a>
-          <a href="/explore/locations/" role="link" tabIndex="0" className="hover:underline transition-colors duration-200">Locations</a>
-          <a href="/web/lite/" role="link" tabIndex="0" className="hover:underline transition-colors duration-200">Instagram Lite</a>
-          <a href="https://www.threads.com/" target="_blank" className="hover:underline transition-colors duration-200">Threads</a>
-          <a href="https://www.facebook.com/help/instagram/261704639352628" rel="nofollow noreferrer" role="link" tabIndex="0" target="_blank" className="hover:underline transition-colors duration-200">Contact Uploading &amp; Non-Users</a>
-          <a href="/accounts/meta_verified/?entrypoint=web_footer" role="link" tabIndex="0" className="hover:underline transition-colors duration-200">Meta Verified</a>
-        </div>
-
-        {/* Language Selector and Copyright */}
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4">
-          <div className="relative inline-block">
-            {/* SR-only label for select input accessibility */}
-            <label htmlFor="language-select" className="sr-only">
-              Switch Display Language
-            </label>
-            <select
-              id="language-select"
-              aria-label="Switch Display Language"
-              className="
-                appearance-none bg-transparent border border-gray-300 dark:border-gray-600
-                rounded-md px-2 py-1 text-xs text-gray-700 dark:text-gray-300 pr-8
-                cursor-pointer focus:outline-none focus:ring-1 focus:ring-blue-500 dark:focus:ring-blue-400
-                transition duration-200 ease-in-out
-              "
-              value={selectedLanguage}
-              onChange={handleLanguageChange}
-            >
-              {languages.map((lang) => (
-                <option key={lang.value} value={lang.value}>
-                  {lang.label}
-                </option>
-              ))}
-            </select>
-            {/* Custom arrow for the select dropdown */}
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
-              <ChevronDownIcon className="w-3 h-3" />
+    <!-- Hero Section -->
+    <section class="relative min-h-screen bg-black text-white overflow-hidden pt-20">
+      <div class="absolute inset-0 overflow-hidden">
+        <!-- Decorative background dots - simplified from original dynamic style to static for general HTML/CSS/JS output -->
+        <div class="decorative-dot" style="top: 87%; left: 30%;"></div>
+        <div class="decorative-dot" style="top: 24%; left: 87%;"></div>
+        <div class="decorative-dot" style="top: 84%; left: 46%;"></div>
+        <div class="decorative-dot" style="top: 90%; left: 53%;"></div>
+        <div class="decorative-dot" style="top: 28%; left: 88%;"></div>
+        <div class="decorative-dot" style="top: 1%; left: 83%;"></div>
+        <div class="decorative-dot" style="top: 40%; left: 4%;"></div>
+        <div class="decorative-dot" style="top: 67%; left: 86%;"></div>
+        <div class="decorative-dot" style="top: 32%; left: 65%;"></div>
+        <div class="decorative-dot" style="top: 3%; left: 32%;"></div>
+        <div class="decorative-dot" style="top: 19%; left: 24%;"></div>
+        <div class="decorative-dot" style="top: 2%; left: 18%;"></div>
+        <div class="decorative-dot" style="top: 84%; left: 31%;"></div>
+        <div class="decorative-dot" style="top: 41%; left: 19%;"></div>
+        <div class="decorative-dot" style="top: 17%; left: 77%;"></div>
+      </div>
+      <div
+        class="absolute pointer-events-none w-[500px] h-[500px] rounded-full opacity-20 bg-gradient-to-r from-orange-500 to-amber-500 blur-[100px]"
+        style="transform: translateX(-250px) translateY(-250px);"></div>
+      <div class="container mx-auto px-4 py-20 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+          <div class="mb-6 fade-in">
+            <span data-slot="badge"
+              class="inline-flex items-center justify-center rounded-md border text-xs font-medium w-fit whitespace-nowrap shrink-0 [&_svg]:size-3 gap-1 [&_svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground px-4 py-1-5 border-gray-700 bg-black/50 backdrop-blur-sm">
+              <span class="mr-2 text-sm text-white">Trusted by 1.5M Code Learners</span>
+              <span class="relative flex h-2 w-2">
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+              </span>
             </span>
           </div>
-          {/* Copyright Information */}
-          <span className="text-gray-700 dark:text-gray-300">© {new Date().getFullYear()} Instagram from Meta</span>
-        </div>
-      </footer>
-
-      {/* Persistent Terms and Privacy Policy Banner */}
-      {showTermsBanner && (
-        <div
-          className="fixed bottom-0 left-0 right-0
-                    bg-white dark:bg-gray-800
-                    border-t border-gray-300 dark:border-gray-700
-                    p-4 text-center text-xs text-gray-700 dark:text-gray-300
-                    z-50 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4
-                    transition-transform duration-300 ease-out transform translate-y-0
-                    px-4 md:px-8 lg:px-12"
-          role="dialog" // Indicate this is a dialog for screen readers
-          aria-labelledby="terms-banner-heading" // Link to the visually hidden heading
-        >
-          <h2 id="terms-banner-heading" className="sr-only">Terms and Privacy Policy Notice</h2>
-          <span className="max-w-prose">
-            By continuing, you agree to Instagram's{' '}
-            <a
-              href="https://help.instagram.com/581066165581870/?locale=en_US"
-              rel="nofollow noopener noreferrer"
-              target="_self"
-              className="text-blue-500 dark:text-blue-400 hover:underline transition-colors duration-200"
-            >
-              Terms of Use
-            </a>{' '}
-            and{' '}
-            <a
-              href="https://privacycenter.instagram.com/policy/"
-              rel="nofollow noopener noreferrer"
-              target="_blank"
-              className="text-blue-500 dark:text-blue-400 hover:underline transition-colors duration-200"
-            >
-              Privacy Policy
+          <h1 class="text-5xl md:text-6xl font-bold mb-4 leading-tight fade-in" style="transition-delay: 0.1s;">
+            <span class="inline-block relative">Consistency<span class="absolute -bottom-2 left-0 h-1 bg-orange-500"
+                style="width: 100%;"></span></span> <!-- -->and<!-- --> <span
+              class="inline-block relative">Community<span class="absolute -bottom-2 left-0 h-1 bg-amber-500"
+                style="width: 100%;"></span></span>
+          </h1>
+          <h2 class="text-3xl md:text-4xl font-bold mb-8 leading-tight fade-in" style="transition-delay: 0.2s;">
+            <span class="bg-gradient-to-r from-orange-400 via-amber-500 to-yellow-500 text-transparent bg-clip-text">An
+              unmatched Learning Experience for coding courses.</span>
+          </h2>
+          <p class="text-lg text-gray-300 mb-8 max-w-3xl mx-auto fade-in" style="transition-delay: 0.3s;">Content is
+            everywhere, but we provide a learning experience that is unmatched — bounties, peer learning, code reviews,
+            virtual hostel, alumni network, doubt sessions, and group projects.</p>
+          <div class="flex flex-wrap justify-center gap-3 mb-12 fade-in" style="transition-delay: 0.4s;">
+            <div
+              class="flex items-center gap-2 bg-gray-900/50 backdrop-blur-sm px-3 py-2 rounded-full border border-gray-800">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="h-5 w-5 text-orange-400">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              <span class="text-sm">Peer learning</span>
+            </div>
+            <div
+              class="flex items-center gap-2 bg-gray-900/50 backdrop-blur-sm px-3 py-2 rounded-full border border-gray-800">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="h-5 w-5 text-amber-400">
+                <circle cx="18" cy="18" r="3"></circle>
+                <circle cx="6" cy="6" r="3"></circle>
+                <path d="M13 6h3a2 2 0 0 1 2 2v7"></path>
+                <line x1="6" x2="6" y1="9" y2="21"></line>
+              </svg>
+              <span class="text-sm">Code reviews</span>
+            </div>
+            <div
+              class="flex items-center gap-2 bg-gray-900/50 backdrop-blur-sm px-3 py-2 rounded-full border border-gray-800">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="h-5 w-5 text-orange-500">
+                <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"></path>
+                <rect x="2" y="6" width="14" height="12" rx="2"></rect>
+              </svg>
+              <span class="text-sm">Virtual hostel</span>
+            </div>
+            <div
+              class="flex items-center gap-2 bg-gray-900/50 backdrop-blur-sm px-3 py-2 rounded-full border border-gray-800">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="h-5 w-5 text-yellow-500">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <span class="text-sm">Doubt sessions</span>
+            </div>
+            <div
+              class="flex items-center gap-2 bg-gray-900/50 backdrop-blur-sm px-3 py-2 rounded-full border border-gray-800">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="h-5 w-5 text-amber-500">
+                <path
+                  d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z">
+                </path>
+                <path d="M20 3v4"></path>
+                <path d="M22 5h-4"></path>
+                <path d="M4 17v2"></path>
+                <path d="M5 18H3"></path>
+              </svg>
+              <span class="text-sm">Bounties</span>
+            </div>
+          </div>
+          <div class="fade-in" style="transition-delay: 0.5s; box-shadow: rgba(249, 115, 22, 0.306) 0px 0px 0.35052px;">
+            <a href="https://courses.chaicode.com/learn/view-all?show=batch&amp;type=17"
+              aria-label="Check all Live Cohorts">
+              <button data-slot="button"
+                class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 has-[>svg]:px-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white my-2 px-8 py-4 h-auto text-lg rounded-xl shadow-lg shadow-orange-500/20 relative overflow-hidden group">
+                <span
+                  class="absolute inset-0 w-full h-full bg-gradient-to-r from-orange-400 to-amber-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-code mr-2 h-5 w-5 relative z-10">
+                  <polyline points="16 18 22 12 16 6"></polyline>
+                  <polyline points="8 6 2 12 8 18"></polyline>
+                </svg>
+                <span class="relative z-10">Check all Live Cohorts</span>
+              </button>
             </a>
-            .
-          </span>
-          {/* Close button for the banner */}
-          <button
-            onClick={() => setShowTermsBanner(false)}
-            aria-label="Close terms and privacy policy banner"
-            className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400"
-          >
-            <CloseIcon className="w-3 h-3 text-gray-600 dark:text-gray-300" />
-          </button>
+          </div>
         </div>
-      )}
-    </div>
-  );
-};
+        <div class="mt-16 max-w-3xl mx-auto relative fade-in" style="transition-delay: 0.6s;">
+          <div
+            class="aspect-video bg-gray-900/50 backdrop-blur-sm rounded-xl border border-gray-800 overflow-hidden shadow-xl">
+            <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-amber-500/10 pointer-events-none">
+            </div>
+            <iframe class="w-full h-full" src="https://www.youtube.com/embed/VNb_LawBBWU?si=vVRslxXgcd4DckCN"
+              title="ChaiCode Introduction"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen="" loading="lazy"></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
 
-export default Result;
+    <!-- Tweet Love Section -->
+    <section class="relative py-20 overflow-hidden bg-black">
+      <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent">
+      </div>
+      <div class="decorative-text" style="top: 10px; left: 40px;">const renderTweets = () => {</div>
+      <div class="decorative-text" style="bottom: 10px; right: 40px;">};</div>
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center mb-12">
+          <p class="text-orange-400 mb-2 fade-in">Love that we get from our community</p>
+          <h2 class="text-4xl md:text-5xl font-bold mb-4 fade-in" style="transition-delay: 0.1s;">
+            <span class="bg-gradient-to-r from-orange-400 to-amber-500 text-transparent bg-clip-text">Tweet Love</span>
+          </h2>
+          <div class="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500 mx-auto rounded-full w-expand"
+            id="tweet-divider"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 fade-in-group" style="transition-delay: 0.2s;">
+          <div
+            class="tweet-card bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 relative overflow-hidden group min-h-[400px]">
+            <div class="absolute -right-6 -bottom-6 opacity-5 text-orange-500">
+              <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-twitter">
+                <path
+                  d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z">
+                </path>
+              </svg>
+            </div>
+            <div class="tweet-container overflow-hidden z-0" data-tweet-id="1907045909394788416"></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-tr from-orange-500/5 to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            </div>
+            <div class="absolute top-2 right-2 text-xs font-mono text-orange-500/30">tweet_1</div>
+          </div>
+          <div
+            class="tweet-card bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 relative overflow-hidden group min-h-[400px]">
+            <div class="absolute -right-6 -bottom-6 opacity-5 text-orange-500">
+              <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-twitter">
+                <path
+                  d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z">
+                </path>
+              </svg>
+            </div>
+            <div class="tweet-container overflow-hidden z-0" data-tweet-id="1906393735203836076"></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-tr from-orange-500/5 to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            </div>
+            <div class="absolute top-2 right-2 text-xs font-mono text-orange-500/30">tweet_2</div>
+          </div>
+          <div
+            class="tweet-card bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl p-6 relative overflow-hidden group min-h-[400px]">
+            <div class="absolute -right-6 -bottom-6 opacity-5 text-orange-500">
+              <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-twitter">
+                <path
+                  d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z">
+                </path>
+              </svg>
+            </div>
+            <div class="tweet-container overflow-hidden z-0" data-tweet-id="1906390359841640771"></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-tr from-orange-500/5 to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+            </div>
+            <div class="absolute top-2 right-2 text-xs font-mono text-orange-500/30">tweet_3</div>
+          </div>
+        </div>
+        <div class="text-center fade-in" style="transition-delay: 0.3s;">
+          <a href="https://courses.chaicode.com/learn/view-all?show=batch&amp;type=17"
+            aria-label="Join Cohorts Live Classes">
+            <button data-slot="button"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs has-[>svg]:px-3 bg-transparent border border-orange-500 text-orange-400 hover:bg-orange-500/10 px-8 py-6 h-auto text-lg rounded-xl">Join
+              Cohorts Live Classes<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-external-link ml-2 h-4 w-4">
+                <path d="M15 3h6v6"></path>
+                <path d="M10 14 21 3"></path>
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              </svg></button>
+          </a>
+        </div>
+      </div>
+    </section>
 
-/*
-TODO: Future Enhancements for a Production Application:
+    <!-- Cohorts Section -->
+    <section id="cohorts" class="py-20 bg-black text-white relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent">
+      </div>
+      <div class="decorative-text" style="top: 40px; left: 40px;">function renderCohorts() {</div>
+      <div class="decorative-text" style="bottom: 40px; right: 40px;">return &lt;LiveClasses /&gt;;</div>
+      <!-- Decorative code snippets - simplified to static for general HTML/CSS/JS output -->
+      <div class="absolute inset-0 pointer-events-none overflow-hidden">
+        <div class="decorative-text"
+          style="top: 0%; left: 0%; transform: translateX(57.4%) translateY(249px) rotate(8.8deg); opacity: 0.1;">const
+        </div>
+        <div class="decorative-text"
+          style="top: 7%; left: 13%; transform: translateX(17%) translateY(349px) rotate(1.9deg); opacity: 0.1;">let
+        </div>
+        <div class="decorative-text"
+          style="top: 14%; left: 26%; transform: translateX(10.3%) translateY(210px) rotate(15.7deg); opacity: 0.1;">
+          =&gt;</div>
+        <div class="decorative-text"
+          style="top: 21%; left: 39%; transform: translateX(76.5%) translateY(347px) rotate(30.6deg); opacity: 0.1;">
+          async</div>
+        <div class="decorative-text"
+          style="top: 28%; left: 52%; transform: translateX(62.6%) translateY(264px) rotate(61.3deg); opacity: 0.1;">
+          await</div>
+        <div class="decorative-text"
+          style="top: 35%; left: 65%; transform: translateX(99.8%) translateY(155px) rotate(121deg); opacity: 0.1;">
+          import</div>
+        <div class="decorative-text"
+          style="top: 42%; left: 78%; transform: translateX(10.8%) translateY(223px) rotate(28.2deg); opacity: 0.1;">
+          export</div>
+        <div class="decorative-text"
+          style="top: 49%; left: 91%; transform: translateX(83.6%) translateY(110px) rotate(85deg); opacity: 0.1;">
+          function</div>
+      </div>
 
-1.  **Global Dark Mode Toggle:** Implement a context API or Redux store to manage the dark mode state globally,
-    allowing users to explicitly switch themes. The current `dark:` classes are ready for this.
-2.  **Asset Management:** Instead of CDN links for images, import them locally. Your build tool (e.g., Vite, Webpack)
-    will then optimize and bundle them, often adding hash filenames for cache busting.
-    Example: `import instagramLogo from '../assets/instagram-logo.png';`
-3.  **API Integration:** Replace `console.log` and `alert` in form submission handlers with actual API calls
-    to a backend for user authentication. Handle loading states, success messages, and specific error responses.
-4.  **Advanced Form Validation:** Implement more robust validation, such as:
-    *   Regex for email format.
-    *   Minimum password length, complexity requirements.
-    *   Real-time validation feedback as the user types.
-    *   Displaying backend-provided error messages.
-5.  **Routing:** If this is part of a larger application, use a routing library like React Router DOM for navigation
-    (e.g., for `/accounts/password/reset` or `/accounts/emailsignup`).
-6.  **Internationalization (i18n):** For multi-language support, integrate an i18n library (e.g., `react-i18next`).
-    The `languages` array and `handleLanguageChange` are placeholders.
-7.  **Component Breakdowns:** For very large components, consider further breaking down sections (e.g., `FooterLinks`, `AppDownloadButtons`)
-    into smaller, more focused components for better readability and reusability, especially if they manage their own specific logic.
-8.  **Animations:** Add more sophisticated animations using CSS transitions/animations or a library like Framer Motion for
-    more engaging UI elements (e.g., form entry animations).
-9.  **Error Boundaries:** Implement React Error Boundaries to gracefully handle JavaScript errors in parts of the UI.
-10. **Testing:** Write unit, integration, and end-to-end tests for components and functionality.
-*/
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="text-center mb-12">
+          <h2 class="text-4xl md:text-5xl font-bold mb-2 fade-in">
+            <span class="bg-gradient-to-r from-orange-400 to-amber-500 text-transparent bg-clip-text">Cohorts</span>
+          </h2>
+          <p class="text-xl text-gray-300 mb-4 fade-in" style="transition-delay: 0.1s;">Live training classes</p>
+          <div class="w-20 h-1 bg-gradient-to-r from-orange-500 to-amber-500 mx-auto rounded-full w-expand"
+            id="cohort-divider"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 fade-in-group"
+          style="transition-delay: 0.2s;">
+          <!-- Cohort Card 1 -->
+          <div
+            class="cohort-card bg-gray-900/60 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden relative group flex flex-col h-[720px]">
+            <div class="absolute top-4 right-4 z-20 flex items-center">
+              <div class="w-3 h-3 bg-red-500 rounded-full mr-2 animate-ping-strong"></div>
+              <span class="text-xs font-semibold text-red-500">LIVE</span>
+            </div>
+            <div class="absolute top-2 left-2 text-xs font-mono text-orange-500/80">&lt;Cohort name="Full Stack
+              Data..."&gt;</div>
+            <div class="relative aspect-video bg-black/50 h-[280px] overflow-hidden video-wrapper">
+              <iframe class="w-full h-full mt-10"
+                src="https://www.youtube.com/embed/Kjd-SWpe1do?controls=1&amp;showinfo=0&amp;rel=0&amp;modestbranding=1"
+                title="Full Stack Data Science 1.0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen="" loading="lazy"></iframe>
+              <div
+                class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer video-overlay"
+                aria-label="Play video">
+                <div class="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-play h-5 w-5 text-white">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                </div>
+              </div>
+              <div class="absolute bottom-2 left-2 flex flex-wrap gap-1">
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">Python</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">TensorFlow</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">Pandas</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">+1</span>
+              </div>
+            </div>
+            <div class="p-5 flex-1 flex flex-col">
+              <div>
+                <h3 class="text-xl font-bold mb-2 text-white line-clamp-1">Full Stack Data Science 1.0</h3>
+                <p class="text-gray-300 text-sm mb-4 line-clamp-2">From Python basics to project deployment</p>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="flex items-center text-xs text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-calendar h-3 w-3 mr-1 text-orange-400">
+                    <path d="M8 2v4"></path>
+                    <path d="M16 2v4"></path>
+                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                    <path d="M3 10h18"></path>
+                  </svg>
+                  <span>Starts April 12, 2025</span>
+                </div>
+                <div class="flex items-center text-xs text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-clock h-3 w-3 mr-1 text-orange-400">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>6 months</span>
+                </div>
+              </div>
+              <div class="mb-4 flex-grow">
+                <div class="flex items-center text-xs text-gray-400 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-terminal h-3 w-3 mr-1 text-orange-400">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" x2="20" y1="19" y2="19"></line>
+                  </svg>
+                  <span>We ❤️ code</span>
+                </div>
+                <div class="bg-black/50 rounded-md p-2 overflow-hidden relative h-[100px]">
+                  <pre class="text-xs font-mono text-gray-300 overflow-hidden"><code>import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+df = pd.read_csv('data.csv')</code></pre>
+                  <div class="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/80 to-transparent"></div>
+                  <div class="absolute top-1 right-1 text-[10px] font-mono text-orange-500/70 px-1 bg-black/30 rounded">
+                    python</div>
+                </div>
+              </div>
+              <div class="mt-auto">
+                <div class="flex items-center justify-between mb-4">
+                  <div>
+                    <div class="flex items-center">
+                      <span class="text-xl font-bold text-white">6999 INR</span>
+                      <span class="text-sm text-gray-500 line-through ml-2">8999 INR</span>
+                    </div>
+                    <div class="text-xs text-orange-400">Save 22%</div>
+                  </div>
+                </div>
+                <div>
+                  <a href="https://hitesh.ai/data-science" aria-label="Learn more about Full Stack Data Science 1.0">
+                    <button data-slot="button"
+                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs hover:bg-primary/90 px-4 has-[>svg]:px-3 w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white py-3 mb-2 h-auto rounded-lg">Learn
+                      More</button>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-2 right-2 text-xs font-mono text-orange-500/30">&lt;/Cohort&gt;</div>
+          </div>
+
+          <!-- Cohort Card 2 -->
+          <div
+            class="cohort-card bg-gray-900/60 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden relative group flex flex-col h-[720px]">
+            <div class="absolute top-4 right-4 z-20 flex items-center">
+              <div class="w-3 h-3 bg-red-500 rounded-full mr-2 animate-ping-strong"></div>
+              <span class="text-xs font-semibold text-red-500">LIVE</span>
+            </div>
+            <div class="absolute top-2 left-2 text-xs font-mono text-orange-500/80">&lt;Cohort name="GenAI with
+              Pyth..."&gt;</div>
+            <div class="relative aspect-video bg-black/50 h-[280px] overflow-hidden video-wrapper">
+              <iframe class="w-full h-full mt-10"
+                src="https://www.youtube.com/embed/VNb_LawBBWU?controls=1&amp;showinfo=0&amp;rel=0&amp;modestbranding=1"
+                title="GenAI with Python | Concept to deployment projects 1.0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen="" loading="lazy"></iframe>
+              <div
+                class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer video-overlay"
+                aria-label="Play video">
+                <div class="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-play h-5 w-5 text-white">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                </div>
+              </div>
+              <div class="absolute bottom-2 left-2 flex flex-wrap gap-1">
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">Python</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">LLMs</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">Transformers</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">+1</span>
+              </div>
+            </div>
+            <div class="p-5 flex-1 flex flex-col">
+              <div>
+                <h3 class="text-xl font-bold mb-2 text-white line-clamp-1">GenAI with Python | Concept to deployment
+                  projects 1.0</h3>
+                <p class="text-gray-300 text-sm mb-4 line-clamp-2">Development side of AI application</p>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="flex items-center text-xs text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-calendar h-3 w-3 mr-1 text-orange-400">
+                    <path d="M8 2v4"></path>
+                    <path d="M16 2v4"></path>
+                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                    <path d="M3 10h18"></path>
+                  </svg>
+                  <span>Starts April 7, 2025</span>
+                </div>
+                <div class="flex items-center text-xs text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-clock h-3 w-3 mr-1 text-orange-400">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>1-2 months</span>
+                </div>
+              </div>
+              <div class="mb-4 flex-grow">
+                <div class="flex items-center text-xs text-gray-400 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-terminal h-3 w-3 mr-1 text-orange-400">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" x2="20" y1="19" y2="19"></line>
+                  </svg>
+                  <span>We ❤️ code</span>
+                </div>
+                <div class="bg-black/50 rounded-md p-2 overflow-hidden relative h-[100px]">
+                  <pre class="text-xs font-mono text-gray-300 overflow-hidden"><code>from transformers import AutoModelForCausalLM, AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("gpt2")
+model = AutoModelForCausalLM.from_pretrained("gpt2")
+inputs = tokenizer("AI is transforming", return_tensors="pt")</code></pre>
+                  <div class="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/80 to-transparent"></div>
+                  <div class="absolute top-1 right-1 text-[10px] font-mono text-orange-500/70 px-1 bg-black/30 rounded">
+                    python</div>
+                </div>
+              </div>
+              <div class="mt-auto">
+                <div class="flex items-center justify-between mb-4">
+                  <div>
+                    <div class="flex items-center">
+                      <span class="text-xl font-bold text-white">4999 INR</span>
+                      <span class="text-sm text-gray-500 line-through ml-2">7999 INR</span>
+                    </div>
+                    <div class="text-xs text-orange-400">Save 38%</div>
+                  </div>
+                </div>
+                <div>
+                  <a href="https://hitesh.ai/genai-cohort" aria-label="Learn more about GenAI with Python">
+                    <button data-slot="button"
+                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs hover:bg-primary/90 px-4 has-[>svg]:px-3 w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white py-3 mb-2 h-auto rounded-lg">Learn
+                      More</button>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-2 right-2 text-xs font-mono text-orange-500/30">&lt;/Cohort&gt;</div>
+          </div>
+
+          <!-- Cohort Card 3 -->
+          <div
+            class="cohort-card bg-gray-900/60 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden relative group flex flex-col h-[720px]">
+            <div class="absolute top-4 right-4 z-20 flex items-center">
+              <div class="w-3 h-3 bg-red-500 rounded-full mr-2 animate-ping-strong"></div>
+              <span class="text-xs font-semibold text-red-500">LIVE</span>
+            </div>
+            <div class="absolute top-2 left-2 text-xs font-mono text-orange-500/80">&lt;Cohort name="DevOps for
+              deve..."&gt;</div>
+            <div class="relative aspect-video bg-black/50 h-[280px] overflow-hidden video-wrapper">
+              <iframe class="w-full h-full mt-10"
+                src="https://www.youtube.com/embed/oBLpqSHc3lA?controls=1&amp;showinfo=0&amp;rel=0&amp;modestbranding=1"
+                title="DevOps for developers 1.0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen="" loading="lazy"></iframe>
+              <div
+                class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer video-overlay"
+                aria-label="Play video">
+                <div class="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-play h-5 w-5 text-white">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                </div>
+              </div>
+              <div class="absolute bottom-2 left-2 flex flex-wrap gap-1">
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">Docker</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">Kubernetes</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">CI/CD</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">+1</span>
+              </div>
+            </div>
+            <div class="p-5 flex-1 flex flex-col">
+              <div>
+                <h3 class="text-xl font-bold mb-2 text-white line-clamp-1">DevOps for developers 1.0</h3>
+                <p class="text-gray-300 text-sm mb-4 line-clamp-2">Perfect guide to get started with DevOps</p>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="flex items-center text-xs text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-calendar h-3 w-3 mr-1 text-orange-400">
+                    <path d="M8 2v4"></path>
+                    <path d="M16 2v4"></path>
+                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                    <path d="M3 10h18"></path>
+                  </svg>
+                  <span>Starts April 15, 2025</span>
+                </div>
+                <div class="flex items-center text-xs text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-clock h-3 w-3 mr-1 text-orange-400">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>1-2 months</span>
+                </div>
+              </div>
+              <div class="mb-4 flex-grow">
+                <div class="flex items-center text-xs text-gray-400 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-terminal h-3 w-3 mr-1 text-orange-400">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" x2="20" y1="19" y2="19"></line>
+                  </svg>
+                  <span>We ❤️ code</span>
+                </div>
+                <div class="bg-black/50 rounded-md p-2 overflow-hidden relative h-[100px]">
+                  <pre class="text-xs font-mono text-gray-300 overflow-hidden"><code>version: '3'
+services:
+  web:
+    image: nginx:alpine
+    ports:</code></pre>
+                  <div class="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/80 to-transparent"></div>
+                  <div class="absolute top-1 right-1 text-[10px] font-mono text-orange-500/70 px-1 bg-black/30 rounded">
+                    yaml</div>
+                </div>
+              </div>
+              <div class="mt-auto">
+                <div class="flex items-center justify-between mb-4">
+                  <div>
+                    <div class="flex items-center">
+                      <span class="text-xl font-bold text-white">4999 INR</span>
+                      <span class="text-sm text-gray-500 line-through ml-2">7999 INR</span>
+                    </div>
+                    <div class="text-xs text-orange-400">Save 38%</div>
+                  </div>
+                </div>
+                <div>
+                  <a href="https://hitesh.ai/devops-cohort" aria-label="Learn more about DevOps for developers">
+                    <button data-slot="button"
+                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs hover:bg-primary/90 px-4 has-[>svg]:px-3 w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white py-3 mb-2 h-auto rounded-lg">Learn
+                      More</button>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-2 right-2 text-xs font-mono text-orange-500/30">&lt;/Cohort&gt;</div>
+          </div>
+
+          <!-- Cohort Card 4 -->
+          <div
+            class="cohort-card bg-gray-900/60 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden relative group flex flex-col h-[720px]">
+            <div class="absolute top-4 right-4 z-20 flex items-center">
+              <div class="w-3 h-3 bg-red-500 rounded-full mr-2 animate-ping-strong"></div>
+              <span class="text-xs font-semibold text-red-500">LIVE</span>
+            </div>
+            <div class="absolute top-2 left-2 text-xs font-mono text-orange-500/80">&lt;Cohort name="Web Dev Cohort
+              ..."&gt;</div>
+            <div class="relative aspect-video bg-black/50 h-[280px] overflow-hidden video-wrapper">
+              <iframe class="w-full h-full mt-10"
+                src="https://www.youtube.com/embed/yG8JMlldoCE?controls=1&amp;showinfo=0&amp;rel=0&amp;modestbranding=1"
+                title="Web Dev Cohort 1.0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen="" loading="lazy"></iframe>
+              <div
+                class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer video-overlay"
+                aria-label="Play video">
+                <div class="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-play h-5 w-5 text-white">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                </div>
+              </div>
+              <div class="absolute bottom-2 left-2 flex flex-wrap gap-1">
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">JavaScript</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">React</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">Node.js</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">+1</span>
+              </div>
+            </div>
+            <div class="p-5 flex-1 flex flex-col">
+              <div>
+                <h3 class="text-xl font-bold mb-2 text-white line-clamp-1">Web Dev Cohort 1.0</h3>
+                <p class="text-gray-300 text-sm mb-4 line-clamp-2">Ultimate guide to build software on web</p>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="flex items-center text-xs text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-calendar h-3 w-3 mr-1 text-orange-400">
+                    <path d="M8 2v4"></path>
+                    <path d="M16 2v4"></path>
+                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                    <path d="M3 10h18"></path>
+                  </svg>
+                  <span>Starts January 11, 2025</span>
+                </div>
+                <div class="flex items-center text-xs text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-clock h-3 w-3 mr-1 text-orange-400">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>6 months</span>
+                </div>
+              </div>
+              <div class="mb-4 flex-grow">
+                <div class="flex items-center text-xs text-gray-400 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-terminal h-3 w-3 mr-1 text-orange-400">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" x2="20" y1="19" y2="19"></line>
+                  </svg>
+                  <span>We ❤️ code</span>
+                </div>
+                <div class="bg-black/50 rounded-md p-2 overflow-hidden relative h-[100px]">
+                  <pre class="text-xs font-mono text-gray-300 overflow-hidden"><code>import React, { useState, useEffect } from 'react';
+
+function App() {
+  const [data, setData] = useState([]);
+  useEffect(() => {</code></pre>
+                  <div class="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/80 to-transparent"></div>
+                  <div class="absolute top-1 right-1 text-[10px] font-mono text-orange-500/70 px-1 bg-black/30 rounded">
+                    javascript</div>
+                </div>
+              </div>
+              <div class="mt-auto">
+                <div class="flex items-center justify-between mb-4">
+                  <div>
+                    <div class="flex items-center">
+                      <span class="text-xl font-bold text-white">6999 INR</span>
+                      <span class="text-sm text-gray-500 line-through ml-2">8999 INR</span>
+                    </div>
+                    <div class="text-xs text-orange-400">Save 22%</div>
+                  </div>
+                </div>
+                <div>
+                  <a href="https://hitesh.ai/cohort" aria-label="Learn more about Web Dev Cohort 1.0">
+                    <button data-slot="button"
+                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs hover:bg-primary/90 px-4 has-[>svg]:px-3 w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white py-3 mb-2 h-auto rounded-lg">Learn
+                      More</button>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-2 right-2 text-xs font-mono text-orange-500/30">&lt;/Cohort&gt;</div>
+          </div>
+
+          <!-- Cohort Card 5 -->
+          <div
+            class="cohort-card bg-gray-900/60 backdrop-blur-sm border border-gray-800 rounded-xl overflow-hidden relative group flex flex-col h-[720px]">
+            <div class="absolute top-4 right-4 z-20 flex items-center">
+              <div class="w-3 h-3 bg-red-500 rounded-full mr-2 animate-ping-strong"></div>
+              <span class="text-xs font-semibold text-red-500">LIVE</span>
+            </div>
+            <div class="absolute top-2 left-2 text-xs font-mono text-orange-500/80">&lt;Cohort name="Coding Hero
+              202..."&gt;</div>
+            <div class="relative aspect-video bg-black/50 h-[280px] overflow-hidden video-wrapper">
+              <iframe class="w-full h-full mt-10"
+                src="https://www.youtube.com/embed/Fw3FezexzV0?controls=1&amp;showinfo=0&amp;rel=0&amp;modestbranding=1"
+                title="Coding Hero 2025"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen="" loading="lazy"></iframe>
+              <div
+                class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer video-overlay"
+                aria-label="Play video">
+                <div class="w-12 h-12 rounded-full bg-orange-500 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-play h-5 w-5 text-white">
+                    <polygon points="6 3 20 12 6 21 6 3"></polygon>
+                  </svg>
+                </div>
+              </div>
+              <div class="absolute bottom-2 left-2 flex flex-wrap gap-1">
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">HTML</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">CSS</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">JavaScript</span>
+                <span
+                  class="inline-flex items-center justify-center rounded-md border px-2 py-0-5 font-medium w-fit whitespace-nowrap bg-black/70 border-orange-500/30 text-xs text-white">+1</span>
+              </div>
+            </div>
+            <div class="p-5 flex-1 flex flex-col">
+              <div>
+                <h3 class="text-xl font-bold mb-2 text-white line-clamp-1">Coding Hero 2025</h3>
+                <p class="text-gray-300 text-sm mb-4 line-clamp-2">Our Community focused program for students</p>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="flex items-center text-xs text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-calendar h-3 w-3 mr-1 text-orange-400">
+                    <path d="M8 2v4"></path>
+                    <path d="M16 2v4"></path>
+                    <rect width="18" height="18" x="3" y="4" rx="2"></rect>
+                    <path d="M3 10h18"></path>
+                  </svg>
+                  <span>Starts Constantly going</span>
+                </div>
+                <div class="flex items-center text-xs text-gray-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-clock h-3 w-3 mr-1 text-orange-400">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                  <span>Always running</span>
+                </div>
+              </div>
+              <div class="mb-4 flex-grow">
+                <div class="flex items-center text-xs text-gray-400 mb-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-terminal h-3 w-3 mr-1 text-orange-400">
+                    <polyline points="4 17 10 11 4 5"></polyline>
+                    <line x1="12" x2="20" y1="19" y2="19"></line>
+                  </svg>
+                  <span>We ❤️ code</span>
+                </div>
+                <div class="bg-black/50 rounded-md p-2 overflow-hidden relative h-[100px]">
+                  <pre class="text-xs font-mono text-gray-300 overflow-hidden"><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;My First Website&lt;/title&gt;</code></pre>
+                  <div class="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/80 to-transparent"></div>
+                  <div class="absolute top-1 right-1 text-[10px] font-mono text-orange-500/70 px-1 bg-black/30 rounded">
+                    html</div>
+                </div>
+              </div>
+              <div class="mt-auto">
+                <div class="flex items-center justify-between mb-4">
+                  <div>
+                    <div class="flex items-center">
+                      <span class="text-xl font-bold text-white">299 INR</span>
+                      <span class="text-sm text-gray-500 line-through ml-2">599 INR</span>
+                    </div>
+                    <div class="text-xs text-orange-400">Save 50%</div>
+                  </div>
+                </div>
+                <div>
+                  <a href="https://courses.chaicode.com/learn/batch/Coding-Hero-2025"
+                    aria-label="Learn more about Coding Hero 2025">
+                    <button data-slot="button"
+                      class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs hover:bg-primary/90 px-4 has-[>svg]:px-3 w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white py-3 mb-2 h-auto rounded-lg">Learn
+                      More</button>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="absolute bottom-2 right-2 text-xs font-mono text-orange-500/30">&lt;/Cohort&gt;</div>
+          </div>
+        </div>
+        <div class="text-center fade-in" style="transition-delay: 0.3s;">
+          <a href="https://courses.chaicode.com/learn/view-all?show=batch&amp;type=17" aria-label="View All Cohorts">
+            <button data-slot="button"
+              class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs has-[>svg]:px-3 bg-transparent border border-orange-500 text-orange-400 hover:bg-orange-500/10 px-8 py-4 h-auto text-lg rounded-xl">View
+              All Cohorts<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-arrow-right ml-2 h-4 w-4">
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg></button>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Benefits Section -->
+    <section class="py-20 bg-black text-white overflow-hidden relative">
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <!-- Decorative code snippets - simplified to static for general HTML/CSS/JS output -->
+        <div class="decorative-text" style="top: 0%; left: 0%; opacity: 0.2;">function()</div>
+        <div class="decorative-text" style="top: 7%; left: 13%; opacity: 0.35;">const data = []</div>
+        <div class="decorative-text" style="top: 14%; left: 26%; opacity: 0.5;">&lt;Component /&gt;</div>
+        <div class="decorative-text" style="top: 21%; left: 39%; opacity: 0.2;">useEffect()</div>
+        <div class="decorative-text" style="top: 28%; left: 52%; opacity: 0.35;">return (</div>
+        <div class="decorative-text" style="top: 35%; left: 65%; opacity: 0.5;">export default</div>
+        <div class="decorative-text" style="top: 42%; left: 78%; opacity: 0.2;">import React</div>
+        <div class="decorative-text" style="top: 49%; left: 91%; opacity: 0.35;">async/await</div>
+        <div class="decorative-text" style="top: 56%; left: 4%; opacity: 0.5;">try { } catch { }</div>
+        <div class="decorative-text" style="top: 63%; left: 17%; opacity: 0.2;">map((item) =&gt; {})</div>
+        <div class="decorative-text" style="top: 70%; left: 30%; opacity: 0.35;">function()</div>
+        <div class="decorative-text" style="top: 77%; left: 43%; opacity: 0.5;">const data = []</div>
+        <div class="decorative-text" style="top: 84%; left: 56%; opacity: 0.2;">&lt;Component /&gt;</div>
+        <div class="decorative-text" style="top: 91%; left: 69%; opacity: 0.35;">useEffect()</div>
+        <div class="decorative-text" style="top: 98%; left: 82%; opacity: 0.5;">return (</div>
+        <div class="decorative-text" style="top: 5%; left: 95%; opacity: 0.2;">export default</div>
+        <div class="decorative-text" style="top: 12%; left: 8%; opacity: 0.35;">import React</div>
+        <div class="decorative-text" style="top: 19%; left: 21%; opacity: 0.5;">async/await</div>
+        <div class="decorative-text" style="top: 26%; left: 34%; opacity: 0.2;">try { } catch { }</div>
+        <div class="decorative-text" style="top: 33%; left: 47%; opacity: 0.35;">map((item) =&gt; {})</div>
+      </div>
+      <div
+        class="hidden md:block absolute pointer-events-none w-[600px] h-[600px] rounded-full opacity-10 bg-gradient-to-r from-orange-500 to-amber-500 blur-[120px]"
+        style="transform: translateX(-300px) translateY(-300px);"></div>
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-4xl mx-auto mb-16 text-center">
+          <div class="inline-block mb-4 scale-in">
+            <div class="relative">
+              <h2 class="text-4xl md:text-5xl font-bold relative z-10">Key Benefits of Cohorts</h2>
+              <div class="absolute -inset-1 rounded-lg bg-gradient-to-r from-orange-500/20 to-amber-500/20 blur-lg"
+                style="background: linear-gradient(90deg, rgba(246, 151, 14, 0.2) 0%, rgba(248, 124, 20, 0.2) 100%);">
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-300 text-lg fade-in" style="transition-delay: 0.1s;">Cohorts are best way to learn because
+            you finish the course in a timely manner</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 fade-in-group"
+          style="transition-delay: 0.2s;">
+          <!-- Benefit Card 1 -->
+          <div
+            class="benefit-card bg-gray-900/30 backdrop-blur-md border border-gray-800 rounded-xl p-6 relative overflow-hidden group">
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100"></div>
+            <div class="flex items-start gap-4 mb-4 relative z-10">
+              <div class="rounded-lg overflow-hidden w-16 h-16 bg-gray-800 flex-shrink-0 border border-gray-700">
+                <img alt="Taught by Professionals" loading="lazy" decoding="async"
+                  class="object-cover rounded-lg w-full h-full"
+                  src="https://images.unsplash.com/photo-1544531585-9847b68c8c86?w=500&h=500&fit=crop" />
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2 text-orange-400">Taught by Professionals</h3>
+                <p class="text-gray-300 text-sm">Our cohorts are being taught by top industry experts and educators</p>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-800">
+              <div class="bg-gray-900 rounded-md p-3 font-mono text-sm text-orange-400 overflow-x-auto">class Teacher
+                extends Professional { /* ... */ }</div>
+            </div>
+            <!-- Decorative dots -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+              <div class="decorative-dot" style="top: 0%; left: 0%;"></div>
+              <div class="decorative-dot" style="top: 33%; left: 27%;"></div>
+              <div class="decorative-dot" style="top: 66%; left: 54%;"></div>
+            </div>
+          </div>
+          <!-- Benefit Card 2 -->
+          <div
+            class="benefit-card bg-gray-900/30 backdrop-blur-md border border-gray-800 rounded-xl p-6 relative overflow-hidden group">
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100"></div>
+            <div class="flex items-start gap-4 mb-4 relative z-10">
+              <div class="rounded-lg overflow-hidden w-16 h-16 bg-gray-800 flex-shrink-0 border border-gray-700">
+                <img alt="Bounties" loading="lazy" decoding="async" class="object-cover rounded-lg w-full h-full"
+                  src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=500&h=500&fit=crop" />
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2 text-orange-400">Bounties</h3>
+                <p class="text-gray-300 text-sm">Earn rewards, from Cash to MacBook. Keeps you motivated to work hard
+                </p>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-800">
+              <div class="bg-gray-900 rounded-md p-3 font-mono text-sm text-orange-400 overflow-x-auto">const reward =
+                solveChallenge(difficulty)</div>
+            </div>
+            <!-- Decorative dots -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+              <div class="decorative-dot" style="top: 30%; left: 25%;"></div>
+              <div class="decorative-dot" style="top: 63%; left: 52%;"></div>
+              <div class="decorative-dot" style="top: 96%; left: 79%;"></div>
+            </div>
+          </div>
+          <!-- Benefit Card 3 -->
+          <div
+            class="benefit-card bg-gray-900/30 backdrop-blur-md border border-gray-800 rounded-xl p-6 relative overflow-hidden group">
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100"></div>
+            <div class="flex items-start gap-4 mb-4 relative z-10">
+              <div class="rounded-lg overflow-hidden w-16 h-16 bg-gray-800 flex-shrink-0 border border-gray-700">
+                <img alt="Coding hostels" loading="lazy" decoding="async" class="object-cover rounded-lg w-full h-full"
+                  src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=500&h=500&fit=crop" />
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2 text-orange-400">Coding hostels</h3>
+                <p class="text-gray-300 text-sm">There is nothing like late night discussion with fellow learners and
+                  solving bugs</p>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-800">
+              <div class="bg-gray-900 rounded-md p-3 font-mono text-sm text-orange-400 overflow-x-auto">while(night) {
+                solveProblems(together) }</div>
+            </div>
+            <!-- Decorative dots -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+              <div class="decorative-dot" style="top: 60%; left: 50%;"></div>
+              <div class="decorative-dot" style="top: 93%; left: 77%;"></div>
+              <div class="decorative-dot" style="top: 26%; left: 4%;"></div>
+            </div>
+          </div>
+          <!-- Benefit Card 4 -->
+          <div
+            class="benefit-card bg-gray-900/30 backdrop-blur-md border border-gray-800 rounded-xl p-6 relative overflow-hidden group">
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100"></div>
+            <div class="flex items-start gap-4 mb-4 relative z-10">
+              <div class="rounded-lg overflow-hidden w-16 h-16 bg-gray-800 flex-shrink-0 border border-gray-700">
+                <img alt="Peer Code Reviews" loading="lazy" decoding="async"
+                  class="object-cover rounded-lg w-full h-full"
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=500&h=500&fit=crop" />
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2 text-orange-400">Peer Code Reviews</h3>
+                <p class="text-gray-300 text-sm">With Our internal tools like Masterji, every code assignment gets
+                  feedback to improve your code</p>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-800">
+              <div class="bg-gray-900 rounded-md p-3 font-mono text-sm text-orange-400 overflow-x-auto">// TODO:
+                Refactor this for better performance</div>
+            </div>
+            <!-- Decorative dots -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+              <div class="decorative-dot" style="top: 90%; left: 75%;"></div>
+              <div class="decorative-dot" style="top: 23%; left: 2%;"></div>
+              <div class="decorative-dot" style="top: 56%; left: 29%;"></div>
+            </div>
+          </div>
+          <!-- Benefit Card 5 -->
+          <div
+            class="benefit-card bg-gray-900/30 backdrop-blur-md border border-gray-800 rounded-xl p-6 relative overflow-hidden group">
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100"></div>
+            <div class="flex items-start gap-4 mb-4 relative z-10">
+              <div class="rounded-lg overflow-hidden w-16 h-16 bg-gray-800 flex-shrink-0 border border-gray-700">
+                <img alt="Leet Lab" loading="lazy" decoding="async" class="object-cover rounded-lg w-full h-full"
+                  src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=500&h=500&fit=crop" />
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2 text-orange-400">Leet Lab</h3>
+                <p class="text-gray-300 text-sm">Our in-house built LeetCode style platform that helps you to understand
+                  foundation of programming language</p>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-800">
+              <div class="bg-gray-900 rounded-md p-3 font-mono text-sm text-orange-400 overflow-x-auto">function
+                optimizeSolution(algorithm) { /* ... */ }</div>
+            </div>
+            <!-- Decorative dots -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+              <div class="decorative-dot" style="top: 20%; left: 0%;"></div>
+              <div class="decorative-dot" style="top: 53%; left: 27%;"></div>
+              <div class="decorative-dot" style="top: 86%; left: 54%;"></div>
+            </div>
+          </div>
+          <!-- Benefit Card 6 -->
+          <div
+            class="benefit-card bg-gray-900/30 backdrop-blur-md border border-gray-800 rounded-xl p-6 relative overflow-hidden group">
+            <div class="absolute inset-0 opacity-0 group-hover:opacity-100"></div>
+            <div class="flex items-start gap-4 mb-4 relative z-10">
+              <div class="rounded-lg overflow-hidden w-16 h-16 bg-gray-800 flex-shrink-0 border border-gray-700">
+                <img alt="Revision classes" loading="lazy" decoding="async"
+                  class="object-cover rounded-lg w-full h-full"
+                  src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?w=500&h=500&fit=crop" />
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2 text-orange-400">Revision classes</h3>
+                <p class="text-gray-300 text-sm">We have so many peer classes by fellow learners that you get so many
+                  chances to learn that topic</p>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-gray-800">
+              <div class="bg-gray-900 rounded-md p-3 font-mono text-sm text-orange-400 overflow-x-auto">for(let i = 0; i
+                &lt; concepts.length; i++) { revise() }</div>
+            </div>
+            <!-- Decorative dots -->
+            <div class="absolute inset-0 overflow-hidden pointer-events-none">
+              <div class="decorative-dot" style="top: 50%; left: 25%;"></div>
+              <div class="decorative-dot" style="top: 83%; left: 52%;"></div>
+              <div class="decorative-dot" style="top: 16%; left: 79%;"></div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="bg-gray-900/30 backdrop-blur-md border border-gray-800 rounded-xl p-6 md:p-8 grid md:grid-cols-5 gap-6 items-center relative overflow-hidden slide-in-bottom">
+          <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <!-- Decorative lines - simplified to static for general HTML/CSS/JS output -->
+            <div class="absolute h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent"
+              style="top: 20%; left: 0px; right: 0px;"></div>
+            <div class="absolute h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent"
+              style="top: 35%; left: 0px; right: 0px;"></div>
+            <div class="absolute h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent"
+              style="top: 50%; left: 0px; right: 0px;"></div>
+            <div class="absolute h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent"
+              style="top: 65%; left: 0px; right: 0px;"></div>
+            <div class="absolute h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent"
+              style="top: 80%; left: 0px; right: 0px;"></div>
+          </div>
+          <div class="md:col-span-2 relative">
+            <div class="aspect-[4/3] bg-gray-800/50 rounded-lg overflow-hidden relative">
+              <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-amber-500/10"
+                style="background: linear-gradient(138.542deg, rgba(249, 115, 22, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);">
+              </div>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <!-- SVG Graph - simplified to static as animation logic is complex -->
+                <svg class="w-full h-full" viewBox="0 0 200 150">
+                  <path
+                    d="M0,30 L200,30 M0,60 L200,60 M0,90 L200,90 M0,120 L200,120 M30,0 L30,150 M60,0 L60,150 M90,0 L90,150 M120,0 L120,150 M150,0 L150,150"
+                    stroke="#1E293B" stroke-width="0.5" stroke-dasharray="2,3" opacity="0.4"></path>
+                  <line x1="30" y1="30" x2="64" y2="56" stroke="#F97316" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="30" y1="30" x2="81" y2="69" stroke="#A855F7" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="30" y1="30" x2="115" y2="95" stroke="#A855F7" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="30" y1="30" x2="132" y2="108" stroke="#F97316" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="47" y1="43" x2="64" y2="56" stroke="#A855F7" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="47" y1="43" x2="81" y2="69" stroke="#3B82F6" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="47" y1="43" x2="115" y2="95" stroke="#3B82F6" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="47" y1="43" x2="132" y2="108" stroke="#A855F7" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="64" y1="56" x2="81" y2="69" stroke="#A855F7" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="64" y1="56" x2="115" y2="95" stroke="#A855F7" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="64" y1="56" x2="132" y2="108" stroke="#F97316" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="81" y1="69" x2="115" y2="95" stroke="#3B82F6" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="81" y1="69" x2="132" y2="108" stroke="#A855F7" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="98" y1="82" x2="115" y2="95" stroke="#A855F7" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="98" y1="82" x2="132" y2="108" stroke="#F97316" stroke-width="1" stroke-opacity="0.8"></line>
+                  <line x1="115" y1="95" x2="132" y2="108" stroke="#A855F7" stroke-width="1" stroke-opacity="0.8">
+                  </line>
+                  <!-- Circles - simplified to static for general HTML/CSS/JS output -->
+                  <circle cx="30" cy="30" r="4" fill="#FB923C" stroke="#EA580C"></circle>
+                  <circle cx="47" cy="43" r="4" fill="#60A5FA" stroke="#2563EB"></circle>
+                  <circle cx="64" cy="56" r="4" fill="#FB923C" stroke="#EA580C"></circle>
+                  <circle cx="81" cy="69" r="4" fill="#60A5FA" stroke="#2563EB"></circle>
+                  <circle cx="98" cy="82" r="4" fill="#FB923C" stroke="#EA580C"></circle>
+                  <circle cx="115" cy="95" r="4" fill="#60A5FA" stroke="#2563EB"></circle>
+                  <circle cx="132" cy="108" r="4" fill="#FB923C" stroke="#EA580C"></circle>
+                  <circle cx="149" cy="31" r="4" fill="#60A5FA" stroke="#2563EB"></circle>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="md:col-span-3 relative z-10">
+            <h3 class="text-2xl font-bold mb-4 text-orange-400 slide-in-right">Alumni Network and job listings</h3>
+            <p class="text-gray-300 mb-4 slide-in-right" style="transition-delay: 0.1s;">The alumni Network that you
+              always wished for in your college. We have a dedicated platform where students get to know each other, do
+              projects, make agencies and join Hackathons.</p>
+            <p class="text-gray-300 slide-in-right" style="transition-delay: 0.2s;">Our HR team also post regular job
+              updates that you can apply directly whenever you are ready</p>
+            <div class="absolute -bottom-4 -right-4 text-xs font-mono text-orange-500/50 opacity-0 slide-in-right"
+              style="transition-delay: 0.3s;">/* connect.alumni.network() */</div>
+          </div>
+        </div>
+        <div class="mt-20 relative slide-in-bottom">
+          <div class="h-px w-full bg-gray-800"></div>
+          <div class="h-1 w-0 bg-gradient-to-r from-orange-500 to-amber-500 absolute top-0 left-0 rounded-full w-expand"
+            id="alumni-divider"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Udemy Section -->
+    <section id="udemy" class="relative py-20 overflow-hidden bg-black">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16 fade-in">
+          <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Our Courses on Udemy</h2>
+          <p class="text-xl text-gray-400 max-w-3xl mx-auto">Join thousands of students who have transformed their
+            careers with our comprehensive courses</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div class="p-8 bg-black/50 backdrop-blur-sm rounded-l-xl border border-gray-800 slide-in-left">
+            <h3 class="text-2xl font-bold mb-4 text-white">Complete web development course</h3>
+            <p class="text-gray-300 mb-6">Only web development course that you will need. Covers HTML, CSS, Tailwind,
+              Node, React, MongoDB, Prisma, Deployment etc</p>
+            <div class="flex items-center gap-2 mb-6">
+              <div class="text-4xl font-bold text-white">4.7</div>
+              <div class="flex flex-col">
+                <div class="flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-star h-4 w-4 text-orange-500 fill-orange-500">
+                    <path
+                      d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z">
+                    </path>
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-star h-4 w-4 text-orange-500 fill-orange-500">
+                    <path
+                      d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z">
+                    </path>
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-star h-4 w-4 text-orange-500 fill-orange-500">
+                    <path
+                      d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z">
+                    </path>
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-star h-4 w-4 text-orange-500 fill-orange-500">
+                    <path
+                      d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z">
+                    </path>
+                  </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-star h-4 w-4 text-orange-500 fill-orange-500 opacity-70">
+                    <path
+                      d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z">
+                    </path>
+                  </svg>
+                </div>
+                <div class="text-sm text-gray-400">Top Rated</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 mb-6">
+              <div class="text-2xl font-bold text-orange-500">₹399</div>
+              <div class="text-gray-500 line-through text-sm">₹3,099</div>
+              <div class="bg-orange-500/20 text-orange-400 text-xs px-2 py-1 rounded">87% off</div>
+            </div>
+            <div>
+              <a href="https://hitesh.ai/udemy" aria-label="Check Udemy Courses">
+                <button data-slot="button"
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 has-[>svg]:px-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-8 py-2 h-auto rounded-xl shadow-lg shadow-orange-500/20">Check
+                  Udemy Courses</button>
+              </a>
+            </div>
+          </div>
+          <div class="relative slide-in-right">
+            <div class="h-full relative" style="padding-bottom:56.25%">
+              <iframe src="https://www.youtube.com/embed/KZ31wDjYleI?si=-gnzytzyEsfm8KS8"
+                title="ChaiCode Web Development Course" class="absolute top-0 left-0 w-full h-full rounded-r-xl"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen="" loading="lazy"></iframe>
+              <div class="absolute bottom-4 right-4 flex items-center gap-2 bg-black/70 px-2 py-1 rounded-md z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-clock h-4 w-4 text-orange-400">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                <span class="text-sm font-medium text-orange-400">45 minutes left at this price!</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="absolute top-4 left-4 text-xs font-mono text-orange-500/30">// udemy.courses.web_development</div>
+      </div>
+    </section>
+
+    <!-- Mobile App Section -->
+    <section class="py-20 bg-black text-white relative overflow-hidden">
+      <div
+        class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent">
+      </div>
+      <!-- Decorative background dots - simplified to static for general HTML/CSS/JS output -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="decorative-dot" style="top: 0%; left: 0%;"></div>
+        <div class="decorative-dot" style="top: 7%; left: 13%; width: 2px; height: 2px;"></div>
+        <div class="decorative-dot" style="top: 14%; left: 26%; width: 3px; height: 3px;"></div>
+        <div class="decorative-dot" style="top: 21%; left: 39%; width: 1px; height: 1px;"></div>
+        <div class="decorative-dot" style="top: 28%; left: 52%; width: 2px; height: 2px;"></div>
+        <div class="decorative-dot" style="top: 35%; left: 65%; width: 3px; height: 3px;"></div>
+        <div class="decorative-dot" style="top: 42%; left: 78%; width: 1px; height: 1px;"></div>
+        <div class="decorative-dot" style="top: 49%; left: 91%; width: 2px; height: 2px;"></div>
+        <div class="decorative-dot" style="top: 56%; left: 4%; width: 3px; height: 3px;"></div>
+        <div class="decorative-dot" style="top: 63%; left: 17%; width: 1px; height: 1px;"></div>
+        <div class="decorative-dot" style="top: 70%; left: 30%; width: 2px; height: 2px;"></div>
+        <div class="decorative-dot" style="top: 77%; left: 43%; width: 3px; height: 3px;"></div>
+        <div class="decorative-dot" style="top: 84%; left: 56%; width: 1px; height: 1px;"></div>
+        <div class="decorative-dot" style="top: 91%; left: 69%; width: 2px; height: 2px;"></div>
+        <div class="decorative-dot" style="top: 98%; left: 82%; width: 3px; height: 3px;"></div>
+      </div>
+      <div
+        class="absolute pointer-events-none w-[500px] h-[500px] rounded-full opacity-20 bg-gradient-to-r from-orange-500 to-amber-500 blur-[100px]"
+        style="top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);"></div>
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+          <div class="relative order-2 md:order-1 slide-in-left">
+            <div class="relative mx-auto max-w-[300px]">
+              <div class="relative z-10 border-[8px] border-gray-800 rounded-[40px] overflow-hidden shadow-xl"
+                style="box-shadow: rgba(249, 115, 22, 0.6) 0px 0px 29.9967px;">
+                <div class="aspect-[9/19] bg-gray-900 overflow-hidden">
+                  <div class="h-full w-full relative">
+                    <div class="bg-gradient-to-r from-orange-600 to-amber-600 p-4">
+                      <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-2">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-code h-5 w-5 text-white">
+                            <polyline points="16 18 22 12 16 6"></polyline>
+                            <polyline points="8 6 2 12 8 18"></polyline>
+                          </svg>
+                          <span class="text-white font-bold">ChaiCode</span>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="lucide lucide-bell h-5 w-5 text-white">
+                          <path d="M10.268 21a2 2 0 0 0 3.464 0"></path>
+                          <path
+                            d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326">
+                          </path>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="p-3">
+                      <div class="bg-gray-800 rounded-lg p-3 mb-3 last:mb-0">
+                        <div class="text-xs font-medium text-orange-400 mb-1">TRENDING</div>
+                        <div class="text-sm font-bold mb-1">React Native Masterclass</div>
+                        <div class="flex justify-between items-center">
+                          <div class="text-xs text-gray-400">4.8 ★ • 2.5h</div>
+                          <div class="bg-orange-500 text-white text-xs px-2 py-0-5 rounded">LIVE</div>
+                        </div>
+                      </div>
+                      <div class="bg-gray-800 rounded-lg p-3 mb-3 last:mb-0">
+                        <div class="text-xs font-medium text-amber-400 mb-1">POPULAR</div>
+                        <div class="text-sm font-bold mb-1">Full Stack JavaScript</div>
+                        <div class="flex justify-between items-center">
+                          <div class="text-xs text-gray-400">4.9 ★ • 8h</div>
+                          <div class="bg-gray-700 text-white text-xs px-2 py-0-5 rounded">ENROLLED</div>
+                        </div>
+                      </div>
+                      <div class="bg-gray-800 rounded-lg p-3 mb-3 last:mb-0">
+                        <div class="text-xs font-medium text-green-400 mb-1">NEW</div>
+                        <div class="text-sm font-bold mb-1">AI with JavaScript</div>
+                        <div class="flex justify-between items-center">
+                          <div class="text-xs text-gray-400">5.0 ★ • 4h</div>
+                          <div class="bg-gray-700 text-white text-xs px-2 py-0-5 rounded">ENROLL</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 bg-gray-800 p-2 flex justify-around">
+                      <div class="flex flex-col items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="lucide lucide-layers h-4 w-4 text-orange-500">
+                          <path
+                            d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z">
+                          </path>
+                          <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path>
+                          <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path>
+                        </svg>
+                        <span class="text-[10px] text-orange-500">Courses</span>
+                      </div>
+                      <div class="flex flex-col items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="lucide lucide-zap h-4 w-4 text-gray-400">
+                          <path
+                            d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z">
+                          </path>
+                        </svg>
+                        <span class="text-[10px] text-gray-400">Live</span>
+                      </div>
+                      <div class="flex flex-col items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                          class="lucide lucide-smartphone h-4 w-4 text-gray-400">
+                          <rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect>
+                          <path d="M12 18h.01"></path>
+                        </svg>
+                        <span class="text-[10px] text-gray-400">Profile</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="absolute -top-10 -left-10 w-20 h-20 rounded-full bg-gradient-to-br from-orange-500/20 to-amber-500/20 blur-md">
+              </div>
+              <div
+                class="absolute -bottom-10 -right-10 w-20 h-20 rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 blur-md">
+              </div>
+            </div>
+            <div class="absolute -bottom-4 -left-4 text-xs font-mono text-orange-500/30">// mobile.render()</div>
+          </div>
+          <div class="order-1 md:order-2 slide-in-right">
+            <div class="fade-in">
+              <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                <span
+                  class="bg-gradient-to-r from-orange-400 via-amber-500 to-yellow-500 text-transparent bg-clip-text">Learn
+                  on the go</span>
+              </h2>
+            </div>
+            <p class="text-xl text-gray-300 mb-8 fade-in" style="transition-delay: 0.1s;">Take your coding journey
+              anywhere with the ChaiCode mobile app. Access courses, join live sessions, and connect with the community
+              - all from your pocket.</p>
+            <div class="space-y-4 mb-8 fade-in" style="transition-delay: 0.2s;">
+              <div class="flex items-center gap-4">
+                <div class="flex-shrink-0 bg-orange-500/20 p-2 rounded-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-zap h-5 w-5 text-orange-500">
+                    <path
+                      d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z">
+                    </path>
+                  </svg>
+                </div>
+                <p class="text-gray-300">Offline course access</p>
+              </div>
+              <div class="flex items-center gap-4">
+                <div class="flex-shrink-0 bg-orange-500/20 p-2 rounded-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-bell h-5 w-5 text-orange-500">
+                    <path d="M10.268 21a2 2 0 0 0 3.464 0"></path>
+                    <path
+                      d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326">
+                    </path>
+                  </svg>
+                </div>
+                <p class="text-gray-300">Live session notifications</p>
+              </div>
+              <div class="flex items-center gap-4">
+                <div class="flex-shrink-0 bg-orange-500/20 p-2 rounded-full flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-smartphone h-5 w-5 text-orange-500">
+                    <rect width="14" height="20" x="5" y="2" rx="2" ry="2"></rect>
+                    <path d="M12 18h.01"></path>
+                  </svg>
+                </div>
+                <p class="text-gray-300">Revision while commuting</p>
+              </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4 fade-in" style="transition-delay: 0.3s;">
+              <div>
+                <a href="https://apps.apple.com/in/app/chaicode/id6504993143" aria-label="Download on the App Store">
+                  <button data-slot="button"
+                    class="whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 has-[>svg]:px-3 w-full sm:w-auto bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-3 h-auto rounded-xl shadow-lg shadow-orange-500/20 flex items-center justify-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-download h-5 w-5 flex-shrink-0">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" x2="12" y1="15" y2="3"></line>
+                    </svg>
+                    <div class="flex flex-col items-start justify-center">
+                      <span class="text-xs leading-tight">Download on the</span><span
+                        class="text-lg font-bold leading-tight">App Store</span>
+                    </div>
+                  </button>
+                </a>
+              </div>
+              <div>
+                <a href="https://play.google.com/store/apps/details?id=com.chaicode.courses&amp;pcampaignid=web_share"
+                  aria-label="Get it on Google Play">
+                  <button data-slot="button"
+                    class="whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 has-[>svg]:px-3 w-full sm:w-auto bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-4 py-3 h-auto rounded-xl shadow-lg shadow-orange-500/20 flex items-center justify-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-download h-5 w-5 flex-shrink-0">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" x2="12" y1="15" y2="3"></line>
+                    </svg>
+                    <div class="flex flex-col items-start justify-center">
+                      <span class="text-xs leading-tight">Get it on</span><span
+                        class="text-lg font-bold leading-tight">Google Play</span>
+                    </div>
+                  </button>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent">
+      </div>
+    </section>
+
+    <!-- YouTube Channels Section -->
+    <section class="py-20 bg-black text-white relative overflow-hidden">
+      <div
+        class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent">
+      </div>
+      <!-- Decorative code snippets - simplified to static for general HTML/CSS/JS output -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="decorative-text youtube-channel-text" style="top: 0%; left: 0%; opacity: 0.2;">function subscribe()
+          { }</div>
+        <div class="decorative-text youtube-channel-text" style="top: 7%; left: 13%; opacity: 0.35;">const videos = []
+        </div>
+        <div class="decorative-text youtube-channel-text" style="top: 14%; left: 26%; opacity: 0.5;">&lt;YoutubeChannel
+          /&gt;</div>
+        <div class="decorative-text youtube-channel-text" style="top: 21%; left: 39%; opacity: 0.2;">useState()</div>
+        <div class="decorative-text youtube-channel-text" style="top: 28%; left: 52%; opacity: 0.35;">return (</div>
+        <div class="decorative-text youtube-channel-text" style="top: 35%; left: 65%; opacity: 0.5;">export default
+        </div>
+        <div class="decorative-text youtube-channel-text" style="top: 42%; left: 78%; opacity: 0.2;">import React</div>
+        <div class="decorative-text youtube-channel-text" style="top: 49%; left: 91%; opacity: 0.35;">channels.map()
+        </div>
+        <div class="decorative-text youtube-channel-text" style="top: 56%; left: 4%; opacity: 0.5;">// Like and
+          subscribe!</div>
+        <div class="decorative-text youtube-channel-text" style="top: 63%; left: 17%; opacity: 0.2;">/* Free tutorials
+          */</div>
+        <div class="decorative-text youtube-channel-text" style="top: 70%; left: 30%; opacity: 0.35;">function
+          subscribe() { }</div>
+        <div class="decorative-text youtube-channel-text" style="top: 77%; left: 43%; opacity: 0.5;">const videos = []
+        </div>
+        <div class="decorative-text youtube-channel-text" style="top: 84%; left: 56%; opacity: 0.2;">&lt;YoutubeChannel
+          /&gt;</div>
+        <div class="decorative-text youtube-channel-text" style="top: 91%; left: 69%; opacity: 0.35;">useState()</div>
+        <div class="decorative-text youtube-channel-text" style="top: 98%; left: 82%; opacity: 0.5;">return (</div>
+      </div>
+      <div
+        class="absolute pointer-events-none w-[500px] h-[500px] rounded-full opacity-10 bg-gradient-to-r from-orange-500 to-amber-500 blur-[100px]"
+        style="top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);"></div>
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-4xl mx-auto text-center mb-12">
+          <div class="inline-block mb-4 scale-in">
+            <div class="relative">
+              <h2 class="text-4xl md:text-5xl font-bold relative z-10">Explore Our Engaging YouTube Channels</h2>
+              <div class="absolute -inset-1 rounded-lg bg-gradient-to-r from-orange-500/20 to-amber-500/20 blur-lg"
+                style="background: linear-gradient(90deg, rgba(246, 151, 14, 0.2) 0%, rgba(248, 124, 20, 0.2) 100%);">
+              </div>
+            </div>
+          </div>
+          <p class="text-xl text-gray-300 max-w-2xl mx-auto fade-in" style="transition-delay: 0.1s;">Follow our channels
+            for free learning resources.</p>
+        </div>
+        <div class="absolute -top-4 left-4 text-xs font-mono text-orange-500/40">// youtube.channels.map((channel) =&gt;
+          {</div>
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div class="relative order-2 md:order-1 slide-in-left">
+            <div class="relative">
+              <div class="relative z-10 rounded-xl overflow-hidden shadow-xl border border-gray-800"
+                style="box-shadow: rgba(249, 115, 22, 0.6) 0px 0px 29.9967px;">
+                <img src="https://hiteshchoudhary.b-cdn.net/coding-hero-v2/hc-laptop.png"
+                  alt="Hitesh Choudhary with YouTube channel" class="w-full h-auto rounded-xl" loading="lazy">
+              </div>
+              <div
+                class="absolute -top-10 -left-10 w-20 h-20 rounded-full bg-gradient-to-br from-orange-500/20 to-amber-500/20 blur-md">
+              </div>
+              <div
+                class="absolute -bottom-10 -right-10 w-20 h-20 rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 blur-md">
+              </div>
+            </div>
+            <div class="absolute -bottom-4 -left-4 text-xs font-mono text-orange-500/30">// youtube.render()</div>
+          </div>
+          <div class="order-1 md:order-2 space-y-6">
+            <div
+              class="bg-gray-900/30 backdrop-blur-md border border-gray-800 rounded-xl p-6 relative overflow-hidden slide-in-right">
+              <div class="flex items-start gap-4">
+                <div class="bg-orange-500 rounded-full p-2 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-youtube h-6 w-6 text-white">
+                    <path
+                      d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17">
+                    </path>
+                    <path d="m10 15 5-3-5-3z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-white">Chai aur Code</h3>
+                  <p class="text-gray-400 text-sm">@chaiaurcode</p>
+                </div>
+              </div>
+              <div class="mt-4 flex flex-wrap gap-4">
+                <div class="bg-gray-800/50 px-3 py-1-5 rounded-full text-sm">
+                  <span class="text-orange-400 font-medium">600K</span> <span class="text-gray-400">subscribers</span>
+                </div>
+                <div class="bg-gray-800/50 px-3 py-1-5 rounded-full text-sm">
+                  <span class="text-orange-400 font-medium">545</span> <span class="text-gray-400">videos</span>
+                </div>
+              </div>
+              <div class="mt-4 flex justify-between items-center">
+                <div class="text-2xl font-bold" style="color:#F97316">हिंदी</div>
+                <a href="https://youtube.com/@chaiaurcode" target="_blank" rel="noopener noreferrer"
+                  aria-label="Visit Chai aur Code YouTube Channel">
+                  <button data-slot="button"
+                    class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs hover:bg-primary/90 h-8 rounded-md gap-1-5 px-3 has-[>svg]:px-2-5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"><svg
+                      xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-external-link h-4 w-4 mr-2">
+                      <path d="M15 3h6v6"></path>
+                      <path d="M10 14 21 3"></path>
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    </svg>Visit Channel</button>
+                </a>
+              </div>
+              <!-- Decorative dots -->
+              <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                <div class="decorative-dot" style="top: 0%; left: 0%;"></div>
+                <div class="decorative-dot" style="top: 33%; left: 27%;"></div>
+                <div class="decorative-dot" style="top: 66%; left: 54%;"></div>
+              </div>
+            </div>
+            <div
+              class="bg-gray-900/30 backdrop-blur-md border border-gray-800 rounded-xl p-6 relative overflow-hidden slide-in-right"
+              style="transition-delay: 0.1s;">
+              <div class="flex items-start gap-4">
+                <div class="bg-orange-500 rounded-full p-2 flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-youtube h-6 w-6 text-white">
+                    <path
+                      d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17">
+                    </path>
+                    <path d="m10 15 5-3-5-3z"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-white">Hitesh Choudhary</h3>
+                  <p class="text-gray-400 text-sm">@HiteshCodeLab</p>
+                </div>
+              </div>
+              <div class="mt-4 flex flex-wrap gap-4">
+                <div class="bg-gray-800/50 px-3 py-1-5 rounded-full text-sm">
+                  <span class="text-orange-400 font-medium">987K</span> <span class="text-gray-400">subscribers</span>
+                </div>
+                <div class="bg-gray-800/50 px-3 py-1-5 rounded-full text-sm">
+                  <span class="text-orange-400 font-medium">1.6K</span> <span class="text-gray-400">videos</span>
+                </div>
+              </div>
+              <div class="mt-4 flex justify-between items-center">
+                <div class="text-2xl font-bold" style="color:#F97316">English</div>
+                <a href="https://www.youtube.com/@Hiteshcodelab" target="_blank" rel="noopener noreferrer"
+                  aria-label="Visit Hitesh Choudhary YouTube Channel">
+                  <button data-slot="button"
+                    class="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs hover:bg-primary/90 h-8 rounded-md gap-1-5 px-3 has-[>svg]:px-2-5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white"><svg
+                      xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                      class="lucide lucide-external-link h-4 w-4 mr-2">
+                      <path d="M15 3h6v6"></path>
+                      <path d="M10 14 21 3"></path>
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    </svg>Visit Channel</button>
+                </a>
+              </div>
+              <!-- Decorative dots -->
+              <div class="absolute inset-0 overflow-hidden pointer-events-none">
+                <div class="decorative-dot" style="top: 30%; left: 25%;"></div>
+                <div class="decorative-dot" style="top: 63%; left: 52%;"></div>
+                <div class="decorative-dot" style="top: 96%; left: 79%;"></div>
+              </div>
+            </div>
+            <div class="flex justify-center fade-in" style="transition-delay: 0.2s;">
+              <a href="https://courses.chaicode.com/learn" aria-label="Explore All Tutorials">
+                <button data-slot="button"
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 has-[>svg]:px-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-8 py-2 h-auto rounded-xl shadow-lg shadow-orange-500/20"><svg
+                    xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-code h-5 w-5 mr-2">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                  </svg>Explore All Tutorials</button>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="absolute -bottom-4 right-4 text-xs font-mono text-orange-500/40">// })</div>
+      </div>
+      <div
+        class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent">
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-gray-800 relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-b from-black via-black to-gray-900 opacity-50"></div>
+      <!-- Decorative background dots - simplified to static for general HTML/CSS/JS output -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="decorative-dot" style="top: 0%; left: 0%;"></div>
+        <div class="decorative-dot" style="top: 7%; left: 13%; width: 2px; height: 2px;"></div>
+        <div class="decorative-dot" style="top: 14%; left: 26%; width: 3px; height: 3px;"></div>
+        <div class="decorative-dot" style="top: 21%; left: 39%; width: 1px; height: 1px;"></div>
+        <div class="decorative-dot" style="top: 28%; left: 52%; width: 2px; height: 2px;"></div>
+        <div class="decorative-dot" style="top: 35%; left: 65%; width: 3px; height: 3px;"></div>
+        <div class="decorative-dot" style="top: 42%; left: 78%; width: 1px; height: 1px;"></div>
+        <div class="decorative-dot" style="top: 49%; left: 91%; width: 2px; height: 2px;"></div>
+        <div class="decorative-dot" style="top: 56%; left: 4%; width: 3px; height: 3px;"></div>
+        <div class="decorative-dot" style="top: 63%; left: 17%; width: 1px; height: 1px;"></div>
+        <div class="decorative-dot" style="top: 70%; left: 30%; width: 2px; height: 2px;"></div>
+        <div class="decorative-dot" style="top: 77%; left: 43%; width: 3px; height: 3px;"></div>
+        <div class="decorative-dot" style="top: 84%; left: 56%; width: 1px; height: 1px;"></div>
+        <div class="decorative-dot" style="top: 91%; left: 69%; width: 2px; height: 2px;"></div>
+        <div class="decorative-dot" style="top: 98%; left: 82%; width: 3px; height: 3px;"></div>
+        <div class="decorative-dot" style="top: 5%; left: 95%; width: 1px; height: 1px;"></div>
+        <div class="decorative-dot" style="top: 12%; left: 8%; width: 2px; height: 2px;"></div>
+        <div class="decorative-dot" style="top: 19%; left: 21%; width: 3px; height: 3px;"></div>
+        <div class="decorative-dot" style="top: 26%; left: 34%; width: 1px; height: 1px;"></div>
+        <div class="decorative-dot" style="top: 33%; left: 47%; width: 2px; height: 2px;"></div>
+      </div>
+      <div class="container mx-auto px-4 py-12 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div class="md:col-span-2">
+            <a class="flex items-center gap-2 mb-4" href="/" aria-label="ChaiCode Home">
+              <div class="h-8">
+                <img alt="ChaiCode" width="180" height="22" decoding="async" loading="lazy" class="h-full w-auto"
+                  style="color:transparent" src="https://www.chaicode.com/chaicode-white.svg">
+              </div>
+            </a>
+            <p class="text-gray-400 mb-6">Home for programmers</p>
+            <div class="flex space-x-4 mb-8">
+              <a href="https://www.youtube.com/@chaiaurcode" target="_blank" rel="noopener noreferrer"
+                class="text-gray-400 hover:text-orange-500 transition-colors" aria-label="YouTube Channel"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-youtube h-5 w-5">
+                  <path
+                    d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17">
+                  </path>
+                  <path d="m10 15 5-3-5-3z"></path>
+                </svg></a>
+              <a href="https://www.instagram.com/hiteshchoudharyofficial/?hl=en" target="_blank"
+                rel="noopener noreferrer" class="text-gray-400 hover:text-orange-500 transition-colors"
+                aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" class="lucide lucide-instagram h-5 w-5">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+                </svg></a>
+              <a href="https://github.com/hiteshchoudhary" target="_blank" rel="noopener noreferrer"
+                class="text-gray-400 hover:text-orange-500 transition-colors" aria-label="GitHub"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-github h-5 w-5">
+                  <path
+                    d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4">
+                  </path>
+                  <path d="M9 18c-4.51 2-5-2-7-2"></path>
+                </svg></a>
+              <a href="https://x.com/hiteshdotcom" target="_blank" rel="noopener noreferrer"
+                class="text-gray-400 hover:text-orange-500 transition-colors" aria-label="Twitter (X)"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-twitter h-5 w-5">
+                  <path
+                    d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z">
+                  </path>
+                </svg></a>
+              <a href="https://in.linkedin.com/in/hiteshchoudhary" target="_blank" rel="noopener noreferrer"
+                class="text-gray-400 hover:text-orange-500 transition-colors" aria-label="LinkedIn"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-linkedin h-5 w-5">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                  <rect width="4" height="12" x="2" y="9"></rect>
+                  <circle cx="4" cy="4" r="2"></circle>
+                </svg></a>
+              <a href="https://hitesh.ai/discord" target="_blank" rel="noopener noreferrer"
+                class="text-gray-400 hover:text-orange-500 transition-colors" aria-label="Discord"><svg
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide lucide-message-square h-5 w-5">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg></a>
+            </div>
+            <p class="text-gray-500 text-sm">© 2025 ChaiCode. All rights reserved.</p>
+          </div>
+          <div>
+            <h3 class="text-white font-medium mb-4">Products</h3>
+            <ul class="space-y-3">
+              <li><a class="text-gray-400 hover:text-orange-400 transition-colors"
+                  href="https://courses.chaicode.com/learn">Courses</a></li>
+              <li><a class="text-gray-400 hover:text-orange-400 transition-colors"
+                  href="https://courses.chaicode.com/learn/view-all?show=batch&amp;type=17">Cohort</a></li>
+              <li><a class="text-gray-400 hover:text-orange-400 transition-colors"
+                  href="https://courses.chaicode.com/learn/batch/about?bundleId=226894">Coding Hero</a></li>
+              <li><a class="text-gray-400 hover:text-orange-400 transition-colors"
+                  href="https://freeapi.app">FreeAPI</a></li>
+              <li><a class="text-gray-400 hover:text-orange-400 transition-colors"
+                  href="https://masterji.co/login">Masterji</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-white font-medium mb-4">Resources</h3>
+            <ul class="space-y-3">
+              <li><a class="text-gray-400 hover:text-orange-400 transition-colors" href="/docs">Docs</a></li>
+              <li><a class="text-gray-400 hover:text-orange-400 transition-colors" href="/privacy-policy">Privacy
+                  Policy</a></li>
+              <li><a class="text-gray-400 hover:text-orange-400 transition-colors" href="/terms-of-services">Terms of
+                  Service</a></li>
+              <li><a class="text-gray-400 hover:text-orange-400 transition-colors" href="/pricing-policy">Pricing
+                  Policy</a></li>
+              <li><a class="text-gray-400 hover:text-orange-400 transition-colors" href="/refund-policy">Refund
+                  Policy</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="mt-16 relative overflow-hidden w-full">
+          <h2
+            class="text-[4rem] sm:text-[6rem] md:text-[8rem] lg:text-[12rem] font-bold text-center tracking-tighter leading-none w-full mx-auto"
+            style="background: linear-gradient(rgba(249, 115, 22, 0.8), rgba(249, 115, 22, 0.2)) text; -webkit-text-fill-color: transparent; max-width: 100%; overflow-wrap: break-word; display: block;">
+            CHAICODE</h2>
+        </div>
+      </div>
+      <div class="absolute bottom-4 left-4 text-xs font-mono text-orange-500/30"></div>
+    </footer>
+  </main>
+
+  <script>
+    // Default function name as ResultComponent
+    function ResultComponent() {
+      // Function to handle header scrolling effect
+      const handleHeaderScroll = () => {
+        const header = document.getElementById('main-header');
+        if (window.scrollY > 50) {
+          header.classList.add('header-bg-scrolled');
+        } else {
+          header.classList.remove('header-bg-scrolled');
+        }
+      };
+
+      // Intersection Observer for fade-in animations
+      const animateOnScroll = () => {
+        const elementsToAnimate = document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right, .slide-in-bottom, .scale-in, .fade-in-group > div, .w-expand');
+
+        const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-visible');
+              observer.unobserve(entry.target); // Unobserve once animated
+            }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -100px 0px' }); // Adjusted rootMargin
+
+        elementsToAnimate.forEach(element => {
+          // Check if element is already visible on page load (e.g., hero section)
+          const rect = element.getBoundingClientRect();
+          if (rect.top < window.innerHeight && rect.bottom >= 0) {
+            element.classList.add('is-visible');
+          } else {
+            observer.observe(element);
+          }
+        });
+      };
+
+      // Smooth scroll for internal navigation links
+      const setupSmoothScroll = () => {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+          anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+              behavior: 'smooth'
+            });
+          });
+        });
+      };
+
+      // Video play overlay logic for cohort cards
+      const setupVideoPlayOverlays = () => {
+        document.querySelectorAll('.video-wrapper').forEach(wrapper => {
+          const iframe = wrapper.querySelector('iframe');
+          const overlay = wrapper.querySelector('.video-overlay');
+
+          if (overlay && iframe) {
+            overlay.addEventListener('click', () => {
+              const currentSrc = iframe.src;
+              if (!currentSrc.includes('autoplay=1')) {
+                iframe.src = currentSrc + '&autoplay=1'; // Start video
+              }
+              overlay.style.opacity = '0'; // Hide overlay
+              overlay.style.pointerEvents = 'none'; // Disable clicks on overlay
+            });
+            // Add hover effect for play button
+            wrapper.addEventListener('mouseenter', () => {
+              if (overlay) overlay.style.opacity = '1';
+            });
+            wrapper.addEventListener('mouseleave', () => {
+              if (overlay) overlay.style.opacity = '0';
+            });
+          }
+        });
+      };
+
+      // Load Twitter embeds dynamically
+      const loadTwitterEmbeds = () => {
+        // Check if Twitter widget script is already loaded
+        if (typeof twttr !== 'undefined' && twttr.widgets) {
+          twttr.widgets.load(document.querySelectorAll('.tweet-container'));
+        } else {
+          // Create script element to load Twitter widgets.js
+          const script = document.createElement('script');
+          script.setAttribute('src', 'https://platform.twitter.com/widgets.js');
+          script.setAttribute('charset', 'utf-8');
+          script.async = true;
+          script.onload = () => {
+            twttr.widgets.load(document.querySelectorAll('.tweet-container'));
+          };
+          document.head.appendChild(script);
+        }
+      };
+
+      // Initialize all components and functionality
+      const init = () => {
+        // Header scroll effect
+        window.addEventListener('scroll', handleHeaderScroll);
+        handleHeaderScroll(); // Call on load to set initial state
+
+        // Animations on scroll
+        animateOnScroll();
+
+        // Smooth scroll navigation
+        setupSmoothScroll();
+
+        // Video play overlays
+        setupVideoPlayOverlays();
+
+        // Load Twitter embeds
+        loadTwitterEmbeds();
+
+        // TODO: Add more interactive elements or form validation if applicable
+        // Currently, no forms are present, so form validation is not needed.
+      };
+
+      // Run initialization when the DOM is fully loaded
+      document.addEventListener('DOMContentLoaded', init);
+    }
+
+    // Execute the main component function
+    ResultComponent();
+  </script>
+</body>
+
+</html>
 ```

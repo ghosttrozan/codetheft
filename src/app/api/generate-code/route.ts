@@ -153,10 +153,16 @@ export async function POST(request: Request) {
       });
 
       return NextResponse.json({ success: true, code: response.text });
-    } catch (err: any) {
-      console.error("Playwright Error:", err.message);
+    } catch (err: unknown) {
+      console.error(
+        "Playwright Error:",
+        err instanceof Error ? err.message : String(err)
+      );
       return NextResponse.json(
-        { success: false, error: err.message },
+        {
+          success: false,
+          error: err instanceof Error ? err.message : "Unknown error",
+        },
         { status: 500 }
       );
     }

@@ -1,18 +1,13 @@
 "use client";
 
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
-import React, { useState, useEffect, useRef, use } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "./button";
 import {
   LogOut,
   UserRound,
   CircleUserRound,
-  Bolt,
-  Layers2,
-  BookOpen,
-  Pin,
-  UserPen,
   CreditCardIcon,
   BanknoteArrowUp,
   History,
@@ -31,6 +26,18 @@ import {
 } from "../ui/dropdown-menu";
 import { useUserStore } from "@/store/userStore";
 import { Separator } from "./separator";
+
+interface AppUser {
+  id: string;
+  name: string;
+  email: string;
+  image?: string | null;
+  credits?: number;
+}
+
+interface UserProfileDropdownProps {
+  user: AppUser;
+}
 
 const AnimatedNavLink = ({
   href,
@@ -56,13 +63,7 @@ const AnimatedNavLink = ({
   );
 };
 
-const UserProfileDropdown = ({
-  session,
-  user,
-}: {
-  session: any;
-  user: any;
-}) => {
+const UserProfileDropdown = ({ user }: UserProfileDropdownProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -72,9 +73,9 @@ const UserProfileDropdown = ({
           aria-label="Open account menu"
           className="border-[#333] bg-[rgba(31,31,31,0.62)] hover:bg-[rgba(51,51,51,0.62)]"
         >
-          {session?.user?.image ? (
+          {user?.image ? (
             <Image
-              src={session.user.image}
+              src={user.image}
               alt="User avatar"
               width={24}
               height={24}
@@ -87,9 +88,9 @@ const UserProfileDropdown = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent className="max-w-64 bg-[#1f1f1f] border-[#333]">
         <DropdownMenuLabel className="flex items-start gap-3">
-          {session?.user?.image ? (
+          {user?.image ? (
             <Image
-              src={session.user.image}
+              src={user.image}
               alt="Avatar"
               width={32}
               height={32}
@@ -102,10 +103,10 @@ const UserProfileDropdown = ({
           )}
           <div className="flex min-w-0 flex-col">
             <span className="truncate text-sm font-medium text-gray-200">
-              {session?.user?.name || "User"}
+              {user?.name || "User"}
             </span>
             <span className="truncate text-xs font-normal text-gray-400">
-              {session?.user?.email || "no email"}
+              {user?.email || "no email"}
             </span>
           </div>
         </DropdownMenuLabel>
@@ -121,9 +122,9 @@ const UserProfileDropdown = ({
             <div className="flex justify-between w-full">
               <span>Credits</span>
               <span
-                className={`${user?.credits > 10 ? "text-green-700" : "text-red-700"}`}
+                className={`${user?.credits && user.credits > 10 ? "text-green-700" : "text-red-700"}`}
               >
-                {user?.credits} left
+                {user?.credits || 0} left
               </span>
             </div>
           </DropdownMenuItem>
@@ -190,12 +191,20 @@ export function Navbar() {
   const [headerShapeClass, setHeaderShapeClass] = useState("rounded-full");
   const shapeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const { data: session, status } = useSession();
-  console.log(session, status);
-
   const { user } = useUserStore();
 
   console.log(user);
+
+  const getSafeUser = (User: typeof user | null | undefined): AppUser => ({
+    id: String(User?.id ?? ""),
+    name: User?.name ?? "",
+    email: User?.email ?? "",
+    image: User?.image ?? "",
+    credits: User?.credits ?? 0,
+  });
+
+  const res = getSafeUser(user);
+  console.log(res);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -220,29 +229,6 @@ export function Navbar() {
       }
     };
   }, [isOpen]);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch(`/api/users/${session?.user.id}`);
-        const data = await res.json();
-
-        useUserStore.getState().setUser(data);
-
-        console.log(data);
-
-        if (!res.ok) {
-          console.error("Error fetching user:", data.error);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-
-    if (session?.user) {
-      fetchUser();
-    }
-  }, [session]);
 
   const logoElement = (
     <div className="relative w-5 h-5 flex items-center justify-center">
@@ -304,13 +290,13 @@ export function Navbar() {
         </nav>
 
         <div className="hidden sm:flex items-center gap-2 sm:gap-3">
-          {!session ? (
+          {!user ? (
             <div className="hidden sm:flex items-center gap-2 sm:gap-3">
               {loginButtonElement}
               {signupButtonElement}
             </div>
           ) : (
-            <UserProfileDropdown session={session} user={user} />
+            <UserProfileDropdown user={getSafeUser(user)} />
           )}
         </div>
 
@@ -358,7 +344,7 @@ export function Navbar() {
                        ${isOpen ? "max-h-[1000px] opacity-100 pt-4" : "max-h-0 opacity-0 pt-0 pointer-events-none"}`}
       >
         <div className="flex flex-col items-center space-y-4 mt-4 w-full">
-          {!session ? (
+          {!user ? (
             <div className="flex flex-col items-center space-y-4 mt-4 w-full">
               <nav className="flex flex-col items-center space-y-4 text-base w-full">
                 {navLinksData.map((link) => (
@@ -380,7 +366,7 @@ export function Navbar() {
                 <div className="flex items-center gap-4 justify-center">
                   {user?.image ? (
                     <Image
-                      src={user?.image}
+                      src={user.image}
                       alt="usr pfp"
                       width={20}
                       height={20}
@@ -406,9 +392,9 @@ export function Navbar() {
                 <div className="flex  justify-between w-full">
                   <span className="text-white">Credits</span>
                   <span
-                    className={`${user?.credits > 10 ? "text-green-700" : "text-red-700"}`}
+                    className={`${user?.credits && user.credits > 10 ? "text-green-700" : "text-red-700"}`}
                   >
-                    {user?.credits} left
+                    {user?.credits || 0} left
                   </span>
                 </div>
               </div>

@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-
 import * as THREE from "three";
 import Image from "next/image";
 import toast from "react-hot-toast";
@@ -13,19 +12,25 @@ import { sendCode, signUp, verifyCode } from "@/lib/authentications";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-type Uniforms = {
-  [key: string]: {
-    value: number[] | number[][] | number;
-    type: string;
-  };
-};
+// type Uniforms = {
+//   [key: string]: {
+//     value: number[] | number[][] | number;
+//     type: string;
+//   };
+// };
 
 interface ShaderProps {
   source: string;
   uniforms: {
     [key: string]: {
-      value: number[] | number[][] | number;
-      type: string;
+      value:
+        | number
+        | number[]
+        | number[][]
+        | THREE.Vector2
+        | THREE.Vector3
+        | THREE.Vector3[];
+      type?: string;
     };
   };
   maxFps?: number;
@@ -42,7 +47,7 @@ export const CanvasRevealEffect = ({
   containerClassName,
   dotSize,
   showGradient = true,
-  reverse = false, // This controls the direction
+  reverse = false,
 }: {
   animationSpeed?: number;
   opacities?: number[];
@@ -50,12 +55,10 @@ export const CanvasRevealEffect = ({
   containerClassName?: string;
   dotSize?: number;
   showGradient?: boolean;
-  reverse?: boolean; // This prop determines the direction
+  reverse?: boolean;
 }) => {
   return (
     <div className={cn("h-full relative w-full", containerClassName)}>
-      {" "}
-      {/* Removed bg-white */}
       <div className="h-full w-full">
         <DotMatrix
           colors={colors ?? [[0, 255, 255]]}
@@ -63,7 +66,6 @@ export const CanvasRevealEffect = ({
           opacities={
             opacities ?? [0.3, 0.3, 0.3, 0.5, 0.5, 0.5, 0.8, 0.8, 0.8, 1]
           }
-          // Pass reverse state and speed via string flags in the empty shader prop
           shader={`
             ${reverse ? "u_reverse_active" : "false"}_;
             animation_speed_factor_${animationSpeed.toFixed(1)}_;
@@ -72,8 +74,6 @@ export const CanvasRevealEffect = ({
         />
       </div>
       {showGradient && (
-        // Adjust gradient colors if needed based on background (was bg-white, now likely uses containerClassName bg)
-        // Example assuming a dark background like the SignInPage uses:
         <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent" />
       )}
     </div>
@@ -94,10 +94,9 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
   opacities = [0.04, 0.04, 0.04, 0.04, 0.04, 0.08, 0.08, 0.08, 0.08, 0.14],
   totalSize = 20,
   dotSize = 2,
-  shader = "", // This shader string will now contain the animation logic
+  shader = "",
   center = ["x", "y"],
 }) => {
-  // ... uniforms calculation remains the same for colors, opacities, etc.
   const uniforms = React.useMemo(() => {
     let colorsArray = [
       colors[0],
@@ -126,13 +125,14 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
         colors[2],
       ];
     }
+
     return {
       u_colors: {
         value: colorsArray.map((color) => [
           color[0] / 255,
           color[1] / 255,
           color[2] / 255,
-        ]),
+        ]) as number[][], // Explicitly type as number[][]
         type: "uniform3fv",
       },
       u_opacities: {
@@ -148,15 +148,14 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
         type: "uniform1f",
       },
       u_reverse: {
-        value: shader.includes("u_reverse_active") ? 1 : 0, // Convert boolean to number (1 or 0)
-        type: "uniform1i", // Use 1i for bool in WebGL1/GLSL100, or just bool for GLSL300+ if supported
+        value: shader.includes("u_reverse_active") ? 1 : 0,
+        type: "uniform1i",
       },
     };
-  }, [colors, opacities, totalSize, dotSize, shader]); // Add shader to dependencies
+  }, [colors, opacities, totalSize, dotSize, shader]);
 
   return (
     <Shader
-      // The main animation logic is now built *outside* the shader prop
       source={`
         precision mediump float;
         in vec2 fragCoord;
@@ -167,7 +166,7 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
         uniform float u_total_size;
         uniform float u_dot_size;
         uniform vec2 u_resolution;
-        uniform int u_reverse; // Changed from bool to int
+        uniform int u_reverse;
 
         out vec4 fragColor;
 
@@ -198,7 +197,7 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
             vec2 st2 = vec2(int(st.x / u_total_size), int(st.y / u_total_size));
 
             float frequency = 5.0;
-            float show_offset = random(st2); // Used for initial opacity random pick and color
+            float show_offset = random(st2);
             float rand = random(st2 * floor((u_time / frequency) + show_offset + frequency));
             opacity *= u_opacities[int(rand * 10.0)];
             opacity *= 1.0 - step(u_dot_size / u_total_size, fract(st.x / u_total_size));
@@ -206,38 +205,27 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
 
             vec3 color = u_colors[int(show_offset * 6.0)];
 
-            // --- Animation Timing Logic ---
-            float animation_speed_factor = 0.5; // Extract speed from shader string
+            float animation_speed_factor = 0.5;
             vec2 center_grid = u_resolution / 2.0 / u_total_size;
             float dist_from_center = distance(center_grid, st2);
 
-            // Calculate timing offset for Intro (from center)
             float timing_offset_intro = dist_from_center * 0.01 + (random(st2) * 0.15);
-
-            // Calculate timing offset for Outro (from edges)
-            // Max distance from center to a corner of the grid
             float max_grid_dist = distance(center_grid, vec2(0.0, 0.0));
             float timing_offset_outro = (max_grid_dist - dist_from_center) * 0.02 + (random(st2 + 42.0) * 0.2);
-
 
             float current_timing_offset;
             if (u_reverse == 1) {
                 current_timing_offset = timing_offset_outro;
-                 // Outro logic: opacity starts high, goes to 0 when time passes offset
                  opacity *= 1.0 - step(current_timing_offset, u_time * animation_speed_factor);
-                 // Clamp for fade-out transition
                  opacity *= clamp((step(current_timing_offset + 0.1, u_time * animation_speed_factor)) * 1.25, 1.0, 1.25);
             } else {
                 current_timing_offset = timing_offset_intro;
-                 // Intro logic: opacity starts 0, goes to base opacity when time passes offset
                  opacity *= step(current_timing_offset, u_time * animation_speed_factor);
-                 // Clamp for fade-in transition
                  opacity *= clamp((1.0 - step(current_timing_offset + 0.1, u_time * animation_speed_factor)) * 1.25, 1.0, 1.25);
             }
 
-
             fragColor = vec4(color, opacity);
-            fragColor.rgb *= fragColor.a; // Premultiply alpha
+            fragColor.rgb *= fragColor.a;
         }`}
       uniforms={uniforms}
       maxFps={60}
@@ -245,108 +233,93 @@ const DotMatrix: React.FC<DotMatrixProps> = ({
   );
 };
 
-const ShaderMaterial = ({
+const ShaderMaterialComponent = ({
   source,
   uniforms,
 }: {
   source: string;
-  hovered?: boolean;
-  maxFps?: number;
-  uniforms: Uniforms;
+  uniforms: {
+    [key: string]: {
+      value:
+        | number
+        | number[]
+        | number[][] // Added support for number[][]
+        | THREE.Vector2
+        | THREE.Vector3
+        | THREE.Vector3[];
+      type?: string;
+    };
+  };
 }) => {
   const { size } = useThree();
   const ref = useRef<THREE.Mesh>(null);
-  let lastFrameTime = 0;
 
   useFrame(({ clock }) => {
     if (!ref.current) return;
     const timestamp = clock.getElapsedTime();
+    const material = ref.current.material as THREE.ShaderMaterial;
 
-    lastFrameTime = timestamp;
-
-    const material: any = ref.current.material;
-    const timeLocation = material.uniforms.u_time;
-    timeLocation.value = timestamp;
+    // Update time uniform
+    if (material.uniforms.u_time) {
+      material.uniforms.u_time.value = timestamp;
+    }
   });
 
-  const getUniforms = () => {
-    const preparedUniforms: any = {};
+  const material = useMemo(() => {
+    const preparedUniforms: Record<string, THREE.IUniform> = {};
 
-    for (const uniformName in uniforms) {
-      const uniform: any = uniforms[uniformName];
-
-      switch (uniform.type) {
-        case "uniform1f":
-          preparedUniforms[uniformName] = { value: uniform.value, type: "1f" };
-          break;
-        case "uniform1i":
-          preparedUniforms[uniformName] = { value: uniform.value, type: "1i" };
-          break;
-        case "uniform3f":
-          preparedUniforms[uniformName] = {
-            value: new THREE.Vector3().fromArray(uniform.value),
-            type: "3f",
-          };
-          break;
-        case "uniform1fv":
-          preparedUniforms[uniformName] = { value: uniform.value, type: "1fv" };
-          break;
-        case "uniform3fv":
-          preparedUniforms[uniformName] = {
-            value: uniform.value.map((v: number[]) =>
-              new THREE.Vector3().fromArray(v)
-            ),
-            type: "3fv",
-          };
-          break;
-        case "uniform2f":
-          preparedUniforms[uniformName] = {
-            value: new THREE.Vector2().fromArray(uniform.value),
-            type: "2f",
-          };
-          break;
-        default:
-          console.error(`Invalid uniform type for '${uniformName}'.`);
-          break;
+    // Convert the uniforms to THREE.IUniform format
+    for (const [key, uniform] of Object.entries(uniforms)) {
+      // Handle special case for u_colors (number[][])
+      if (
+        key === "u_colors" &&
+        Array.isArray(uniform.value) &&
+        Array.isArray(uniform.value[0])
+      ) {
+        preparedUniforms[key] = {
+          value: (uniform.value as number[][]).map((v) =>
+            new THREE.Vector3().fromArray(v)
+          ),
+        };
+      }
+      // Handle other uniform types
+      else {
+        preparedUniforms[key] = { value: uniform.value };
       }
     }
 
-    preparedUniforms["u_time"] = { value: 0, type: "1f" };
-    preparedUniforms["u_resolution"] = {
+    // Add required uniforms
+    preparedUniforms.u_time = { value: 0 };
+    preparedUniforms.u_resolution = {
       value: new THREE.Vector2(size.width * 2, size.height * 2),
-    }; // Initialize u_resolution
-    return preparedUniforms;
-  };
+    };
 
-  // Shader material
-  const material = useMemo(() => {
-    const materialObject = new THREE.ShaderMaterial({
+    return new THREE.ShaderMaterial({
       vertexShader: `
-      precision mediump float;
-      in vec2 coordinates;
-      uniform vec2 u_resolution;
-      out vec2 fragCoord;
-      void main(){
-        float x = position.x;
-        float y = position.y;
-        gl_Position = vec4(x, y, 0.0, 1.0);
-        fragCoord = (position.xy + vec2(1.0)) * 0.5 * u_resolution;
-        fragCoord.y = u_resolution.y - fragCoord.y;
-      }
+        precision mediump float;
+        in vec2 coordinates;
+        uniform vec2 u_resolution;
+        out vec2 fragCoord;
+        void main(){
+          float x = position.x;
+          float y = position.y;
+          gl_Position = vec4(x, y, 0.0, 1.0);
+          fragCoord = (position.xy + vec2(1.0)) * 0.5 * u_resolution;
+          fragCoord.y = u_resolution.y - fragCoord.y;
+        }
       `,
       fragmentShader: source,
-      uniforms: getUniforms(),
+      uniforms: preparedUniforms,
       glslVersion: THREE.GLSL3,
       blending: THREE.CustomBlending,
       blendSrc: THREE.SrcAlphaFactor,
       blendDst: THREE.OneFactor,
+      transparent: true,
     });
-
-    return materialObject;
-  }, [size.width, size.height, source]);
+  }, [source, size.width, size.height, uniforms]);
 
   return (
-    <mesh ref={ref as any}>
+    <mesh ref={ref}>
       <planeGeometry args={[2, 2]} />
       <primitive object={material} attach="material" />
     </mesh>
@@ -355,8 +328,8 @@ const ShaderMaterial = ({
 
 const Shader: React.FC<ShaderProps> = ({ source, uniforms, maxFps = 60 }) => {
   return (
-    <Canvas className="absolute inset-0  h-full w-full">
-      <ShaderMaterial source={source} uniforms={uniforms} maxFps={maxFps} />
+    <Canvas className={`"absolute inset-0 h-full w-full" ${maxFps}`}>
+      <ShaderMaterialComponent source={source} uniforms={uniforms} />
     </Canvas>
   );
 };
@@ -368,7 +341,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
 
   const [step, setStep] = useState<"email" | "code" | "success">("email");
   const [code, setCode] = useState("");
-  const codeInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const codeInputRef = useRef<HTMLInputElement>(null);
   // const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [initialCanvasVisible, setInitialCanvasVisible] = useState(true);
   const [reverseCanvasVisible, setReverseCanvasVisible] = useState(false);
@@ -465,7 +438,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
   useEffect(() => {
     if (step === "code") {
       const timer = setTimeout(() => {
-        codeInputRefs.current[0]?.focus();
+        codeInputRef.current?.focus();
       }, 500);
 
       return () => clearTimeout(timer);
@@ -481,16 +454,15 @@ export const SignInPage = ({ className }: SignInPageProps) => {
     }
   };
 
-  const handleVerifyCode = async (value) => {
+  const handleVerifyCode = async (value: string) => {
     try {
-
       if (value.length !== 6) {
         toast.error("Please enter all 6 digits");
         return;
       }
       const verificationRes = await verifyCode(email, value);
 
-      if (verificationRes.ok) {
+      if (verificationRes?.ok) {
         toast.success("OTP verified successfully!", {
           style: {
             borderRadius: "10px",
@@ -525,13 +497,13 @@ export const SignInPage = ({ className }: SignInPageProps) => {
       } else {
         toast.error("Invalid verification code");
         setCode("");
-        codeInputRefs.current[0]?.focus();
+        codeInputRef.current?.focus();
       }
     } catch (error) {
       console.error("Verification error:", error);
       toast.error("An error occurred during verification");
       setCode("");
-      codeInputRefs.current[0]?.focus();
+      codeInputRef.current?.focus();
     }
   };
 
@@ -543,7 +515,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
         error: "Failed to send code. Please try again.",
       });
       setCode("");
-      codeInputRefs.current[0]?.focus();
+      codeInputRef.current?.focus();
     } catch (error) {
       console.error("Error resending OTP:", error);
     }
@@ -766,7 +738,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                         <div className="flex items-center justify-center">
                           <div className="relative w-full">
                             <input
-                              ref={codeInputRefs}
+                              ref={codeInputRef}
                               type="text"
                               inputMode="numeric"
                               pattern="[0-9]{6}"
@@ -804,10 +776,10 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                         transition={{ duration: 0.2 }}
                         onClick={() => {
                           // Resend code logic
-                          resendOtp(email);
+                          resendOtp();
                           setCode("");
-                          if (codeInputRefs.current) {
-                            codeInputRefs.current.focus();
+                          if (codeInputRef.current) {
+                            codeInputRef.current.focus();
                           }
                         }}
                       >
@@ -826,7 +798,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                         Back
                       </motion.button>
                       <motion.button
-                        onClick={handleVerifyCode}
+                        onClick={() => handleVerifyCode}
                         className={`flex-1 rounded-full font-medium py-3 border transition-all duration-300 ${
                           code.length === 6
                             ? "bg-white text-black border-transparent hover:bg-white/90 cursor-pointer"
@@ -853,7 +825,7 @@ export const SignInPage = ({ className }: SignInPageProps) => {
                   >
                     <div className="space-y-1">
                       <h1 className="text-[2.5rem] font-bold leading-[1.1] tracking-tight text-white">
-                        You're in!
+                        You re in!
                       </h1>
                       <p className="text-[1.25rem] text-white/50 font-light">
                         Welcome

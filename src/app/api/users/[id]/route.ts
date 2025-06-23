@@ -1,24 +1,19 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { use } from "react";
 
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = await params;
-
-  const userId = parseInt(id, 10);
-
-  if (isNaN(userId)) {
-    return NextResponse.json(
-      { error: "Invalid user ID format" },
-      { status: 400 }
-    );
-  }
-
+export async function GET(request: NextRequest) {
   try {
-    // 2. Use consistent naming (user instead of User)
+    // 🧠 Get the URL and extract the last part (user ID)
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split("/");
+    const id = pathParts[pathParts.length - 1]; // last part is the [id]
+
+    const userId = parseInt(id, 10);
+
+    if (isNaN(userId)) {
+      return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });
+    }
+
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -35,24 +30,27 @@ export async function GET(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // 3. Consider excluding sensitive data
     const safeUser = {
       id: user.id,
       name: user.name,
       image: user.image,
+      email: user.email,
       credits: user.credits,
       isVerified: user.isVerified,
     };
 
     return NextResponse.json(safeUser);
   } catch (err: unknown) {
-    // 4. Better error handling
     console.error("Error fetching user:", err);
+    let errorMessage = "Something went wrong";
 
+    if (err instanceof Error) {
+      errorMessage = err.message;
+    }
     return NextResponse.json(
       {
         error: "Internal server error",
-        message: err instanceof Error ? err.message : "Unknown error",
+        message: errorMessage,
       },
       { status: 500 }
     );
