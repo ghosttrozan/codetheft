@@ -26,6 +26,7 @@ import {
 } from "../ui/dropdown-menu";
 import { useUserStore } from "@/store/userStore";
 import { Separator } from "./separator";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface AppUser {
   id: string;
@@ -190,10 +191,9 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [headerShapeClass, setHeaderShapeClass] = useState("rounded-full");
   const shapeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
 
   const { user } = useUserStore();
-
-  console.log(user);
 
   const getSafeUser = (User: typeof user | null | undefined): AppUser => ({
     id: String(User?.id ?? ""),
@@ -203,12 +203,14 @@ export function Navbar() {
     credits: User?.credits ?? 0,
   });
 
-  const res = getSafeUser(user);
-  console.log(res);
-
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => setUserLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, [user]);
 
   useEffect(() => {
     if (shapeTimeoutRef.current) {
@@ -253,7 +255,7 @@ export function Navbar() {
   );
 
   const signupButtonElement = (
-    <Link href={"/auth"} className="relative group w-full sm:w-auto">
+    <Link href={"/auth/sign-up"} className="relative group w-full sm:w-auto">
       <div
         className="absolute inset-0 -m-2 rounded-full
                      hidden sm:block
@@ -267,6 +269,39 @@ export function Navbar() {
       </Button>
     </Link>
   );
+
+  if (userLoading) {
+    return (
+      <header
+        className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-20
+                   flex flex-col items-center
+                   pl-6 pr-6 py-3 backdrop-blur-sm
+                   rounded-full
+                   border border-[#333] bg-[#1f1f1f57]
+                   w-[calc(100%-2rem)] sm:w-auto`}
+      >
+        <div className="flex items-center justify-between w-full gap-x-6 sm:gap-x-8">
+          {/* Logo skeleton */}
+          <Skeleton className="w-5 h-5 rounded-full bg-gray-700" />
+
+          {/* Navigation skeleton - hidden on mobile */}
+          <div className="hidden sm:flex gap-6">
+            <Skeleton className="h-4 w-16 bg-gray-700" />
+            <Skeleton className="h-4 w-16 bg-gray-700" />
+          </div>
+
+          {/* User area skeleton */}
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-8 w-8 rounded-full bg-gray-700" />
+            <div className="hidden sm:flex flex-col gap-1">
+              <Skeleton className="h-3 w-24 bg-gray-700" />
+              <Skeleton className="h-2 w-16 bg-gray-700" />
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header
