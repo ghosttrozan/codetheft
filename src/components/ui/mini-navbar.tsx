@@ -9,10 +9,6 @@ import {
   UserRound,
   CircleUserRound,
   CreditCardIcon,
-  BanknoteArrowUp,
-  History,
-  RotateCcwKey,
-  HistoryIcon,
 } from "lucide-react";
 import Image from "next/image";
 import {
@@ -52,7 +48,7 @@ const AnimatedNavLink = ({
   const textSizeClass = "text-sm";
 
   return (
-    <a
+    <Link
       href={href}
       className={`group relative inline-block overflow-hidden h-5 flex items-center ${textSizeClass}`}
     >
@@ -60,7 +56,7 @@ const AnimatedNavLink = ({
         <span className={defaultTextColor}>{children}</span>
         <span className={hoverTextColor}>{children}</span>
       </div>
-    </a>
+    </Link>
   );
 };
 
@@ -129,44 +125,18 @@ const UserProfileDropdown = ({ user }: UserProfileDropdownProps) => {
               </span>
             </div>
           </DropdownMenuItem>
-          <DropdownMenuItem className="focus:bg-[#333] focus:text-white text-white">
-            <BanknoteArrowUp
-              size={16}
-              strokeWidth={2}
-              className="opacity-60 mr-2"
-              aria-hidden="true"
-            />
-            <span>Add Credits</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem className="focus:bg-[#333] focus:text-white text-white">
-            <History
-              size={16}
-              strokeWidth={2}
-              className="opacity-60 mr-2"
-              aria-hidden="true"
-            />
-            <span>Usage</span>
-          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator className="bg-[#333]" />
         <DropdownMenuGroup>
           <DropdownMenuItem className="focus:bg-[#333] focus:text-white text-white">
-            <RotateCcwKey
-              size={16}
-              strokeWidth={2}
-              className="opacity-60 mr-2"
-              aria-hidden="true"
-            />
-            <span>Update Password</span>
+            <Link href="/about" className="w-full">
+              About
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="focus:bg-[#333] focus:text-white text-white">
-            <HistoryIcon
-              size={16}
-              strokeWidth={2}
-              className="opacity-60 mr-2"
-              aria-hidden="true"
-            />
-            <span>History</span>
+            <Link href="/contact" className="w-full">
+              Contact
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator className="bg-[#333]" />
@@ -233,17 +203,16 @@ export function Navbar() {
   }, [isOpen]);
 
   const logoElement = (
-    <div className="relative w-5 h-5 flex items-center justify-center">
-      <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 top-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
-      <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 left-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
-      <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 right-0 top-1/2 transform -translate-y-1/2 opacity-80"></span>
-      <span className="absolute w-1.5 h-1.5 rounded-full bg-gray-200 bottom-0 left-1/2 transform -translate-x-1/2 opacity-80"></span>
+    <div className="w-6 h-6 flex items-center justify-center rounded-md bg-gray-900 text-white text-xs font-mono hover:bg-gray-700 transition">
+      <span>&lt;/&gt;</span>
     </div>
   );
 
   const navLinksData = [
-    { label: "Careers", href: "#2" },
-    { label: "Discover", href: "#3" },
+    { label: "How To Use", href: "/features" },
+    { label: "Features", href: "/features" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
   ];
 
   const loginButtonElement = (
@@ -281,16 +250,11 @@ export function Navbar() {
                    w-[calc(100%-2rem)] sm:w-auto`}
       >
         <div className="flex items-center justify-between w-full gap-x-6 sm:gap-x-8">
-          {/* Logo skeleton */}
           <Skeleton className="w-5 h-5 rounded-full bg-gray-700" />
-
-          {/* Navigation skeleton - hidden on mobile */}
           <div className="hidden sm:flex gap-6">
             <Skeleton className="h-4 w-16 bg-gray-700" />
             <Skeleton className="h-4 w-16 bg-gray-700" />
           </div>
-
-          {/* User area skeleton */}
           <div className="flex items-center gap-3">
             <Skeleton className="h-8 w-8 rounded-full bg-gray-700" />
             <div className="hidden sm:flex flex-col gap-1">
@@ -305,7 +269,7 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-20
+      className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-50
                        flex flex-col items-center
                        pl-6 pr-6 py-3 backdrop-blur-sm
                        ${headerShapeClass}
@@ -314,7 +278,9 @@ export function Navbar() {
                        transition-[border-radius] duration-0 ease-in-out`}
     >
       <div className="flex items-center justify-between w-full gap-x-6 sm:gap-x-8">
-        <div className="flex items-center">{logoElement}</div>
+        <Link href={"/"}>
+          <div className="flex items-center">{logoElement}</div>
+        </Link>
 
         <nav className="hidden sm:flex items-center space-x-4 sm:space-x-6 text-sm">
           {navLinksData.map((link) => (
@@ -383,21 +349,21 @@ export function Navbar() {
             <div className="flex flex-col items-center space-y-4 mt-4 w-full">
               <nav className="flex flex-col items-center space-y-4 text-base w-full">
                 {navLinksData.map((link) => (
-                  <a
+                  <Link
                     key={link.href}
                     href={link.href}
                     className="text-gray-300 hover:text-white transition-colors w-full text-center"
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 ))}
               </nav>
               {loginButtonElement}
               {signupButtonElement}
             </div>
           ) : (
-            <div className="">
-              <div className="">
+            <div className="w-full">
+              <div className="w-full">
                 <div className="flex items-center gap-4 justify-center">
                   {user?.image ? (
                     <Image
@@ -413,10 +379,10 @@ export function Navbar() {
                   <h1 className="text-white text-center">{user?.name}</h1>
                 </div>
                 <div className="mt-2">
-                  <h1 className="text-gray-400">{user?.email}</h1>
+                  <h1 className="text-gray-400 text-center">{user?.email}</h1>
                 </div>
               </div>
-              <Separator />
+              <Separator className="my-4" />
               <div className="text-white flex items-center justify-center mt-4">
                 <CreditCardIcon
                   size={16}
@@ -424,7 +390,7 @@ export function Navbar() {
                   className="opacity-60 mr-2"
                   aria-hidden="true"
                 />
-                <div className="flex  justify-between w-full">
+                <div className="flex justify-between w-full">
                   <span className="text-white">Credits</span>
                   <span
                     className={`${user?.credits && user.credits > 10 ? "text-green-700" : "text-red-700"}`}
@@ -433,43 +399,40 @@ export function Navbar() {
                   </span>
                 </div>
               </div>
-              <div className="text-white flex items-center justify-center mt-4">
-                <BanknoteArrowUp
-                  size={16}
-                  strokeWidth={2}
-                  className="opacity-60 mr-2"
-                  aria-hidden="true"
-                />
-                <span className="text-white text-center">Add Credits</span>
+              <div className="w-full mt-4">
+                <Link
+                  href="/features"
+                  className="text-white flex items-center justify-center"
+                >
+                  How to Use
+                </Link>
               </div>
-              <div className="text-white flex items-center justify-center mt-4">
-                <History
-                  size={16}
-                  strokeWidth={2}
-                  className="opacity-60 mr-2"
-                  aria-hidden="true"
-                />
-                <span className="text-white text-center">Usage</span>
+              <div className="w-full mt-4">
+                <Link
+                  href="/features"
+                  className="text-white flex items-center justify-center"
+                >
+                  Features
+                </Link>
               </div>
-              <div className="text-white flex items-center justify-center mt-4">
-                <RotateCcwKey
-                  size={16}
-                  strokeWidth={2}
-                  className="opacity-60 mr-2"
-                  aria-hidden="true"
-                />
-                <span className="text-white text-center">Update Password</span>
+              <div className="w-full mt-4">
+                <Link
+                  href="/about"
+                  className="text-white flex items-center justify-center"
+                >
+                  About
+                </Link>
               </div>
-              <div className="text-white mb-4 flex items-center justify-center mt-4">
-                <HistoryIcon
-                  size={16}
-                  strokeWidth={2}
-                  className="opacity-60 mr-2"
-                  aria-hidden="true"
-                />
-                <span className="text-white">History</span>
+              <div className="w-full mt-4">
+                <Link
+                  href="/contact"
+                  className="text-white flex items-center justify-center"
+                >
+                  Contact
+                </Link>
               </div>
-              <Separator />
+
+              <Separator className="my-4" />
               <div
                 className="focus:bg-red-900/30 flex items-center justify-center mt-4 mb-2 focus:text-red-500 text-red-500"
                 onClick={() => signOut({ callbackUrl: "/" })}

@@ -4,69 +4,7 @@ import Link from "next/link";
 import { DIcons } from "dicons";
 
 const navigation = {
-  categories: [
-    {
-      id: "women",
-      name: "Women",
-
-      sections: [
-        {
-          id: "about",
-          name: "About",
-          items: [
-            { name: "About", href: "/about" },
-            { name: "Works", href: "/agency/works" },
-            { name: "Pricing", href: "/pricing" },
-          ],
-        },
-        {
-          id: "features",
-          name: "Features",
-          items: [
-            { name: "Products", href: "/products" },
-            { name: "Agency", href: "/agency" },
-            { name: "Dashboard", href: "/dashboard" },
-          ],
-        },
-        {
-          id: "products",
-          name: "Products",
-          items: [
-            { name: "DIcons", href: "/products/dicons" },
-            { name: "DShapes", href: "/products/dshapes" },
-            { name: "Graaadients", href: "/products/graaadients" },
-          ],
-        },
-        {
-          id: "designs",
-          name: "Designs",
-          items: [
-            { name: "Design", href: "/designs" },
-            { name: "Components", href: "/components" },
-            { name: "Blogs", href: "/blogs" },
-          ],
-        },
-        {
-          id: "other",
-          name: "Others",
-          items: [
-            { name: "Graphic", href: "/graphic" },
-            { name: "3D Icons", href: "/products/3dicons" },
-            { name: "Colors", href: "/products/colors/generate" },
-          ],
-        },
-        {
-          id: "company",
-          name: "Company",
-          items: [
-            { name: "Contact", href: "/contact" },
-            { name: "Terms", href: "/terms" },
-            { name: "Privacy", href: "/privacy" },
-          ],
-        },
-      ],
-    },
-  ],
+  categories: [],
 };
 
 export function Footer() {
@@ -97,17 +35,17 @@ export function Footer() {
         <div className="py-10">
           {navigation.categories.map((category) => (
             <div
-              key={category.name}
+              key={category?.name}
               className="grid grid-cols-3 flex-row justify-between gap-6 leading-6 md:flex"
             >
-              {category.sections.map((section) => (
+              {category.sections.map((section: any) => (
                 <div key={section.name}>
                   <ul
                     role="list"
                     aria-labelledby={`${category.id}-${section.id}-heading-mobile`}
                     className="flex flex-col space-y-2"
                   >
-                    {section.items.map((item) => (
+                    {section.items.map((item: any) => (
                       <li key={item.name} className="flow-root">
                         <Link
                           href={item.href}

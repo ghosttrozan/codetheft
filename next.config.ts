@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
       "imgs.search.brave.com",
       "lh3.googleusercontent.com",
       "avatars.githubusercontent.com",
+      "images.unsplash.com",
     ],
   },
 

@@ -3,12 +3,13 @@ import { prisma } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
-    // 🧠 Get the URL and extract the last part (user ID)
     const url = new URL(request.url);
     const pathParts = url.pathname.split("/");
     const id = pathParts[pathParts.length - 1]; // last part is the [id]
 
     const userId = parseInt(id, 10);
+
+    console.log(userId);
 
     if (isNaN(userId)) {
       return NextResponse.json({ error: "Invalid user ID" }, { status: 400 });

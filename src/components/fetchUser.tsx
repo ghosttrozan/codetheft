@@ -10,9 +10,7 @@ const FetchUser = () => {
   useEffect(() => {
     const fetchUser = async () => {
       if (!session?.user?.id) return;
-      const res = await fetch(
-        `http://localhost:3000/api/users/${session?.user?.id}`
-      );
+      const res = await fetch(`/api/users/${session?.user?.id}`);
       const data = await res.json();
       setUser(data);
     };
