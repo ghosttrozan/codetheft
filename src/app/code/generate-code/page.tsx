@@ -22,11 +22,9 @@ export default function CodeBlockPage() {
 
   const [code, setCode] = useState(DEFAULT_CODE);
   const [isLoading, setIsLoading] = useState(true);
-  const hasFetched = useRef(false); // Add this ref to track if we've fetched
+  const hasFetched = useRef(false);
 
-  const shouldShowPreview = ["HTML/CSS", "HTML/CSS/JS"].includes(
-    language || ""
-  );
+  const shouldShowPreview = ["HTML/CSS", "HTML/CSS/JS"].includes(language);
 
   const { user } = useUserStore();
 
@@ -37,42 +35,46 @@ export default function CodeBlockPage() {
   }, [user]);
 
   const fetchCode = useCallback(async () => {
-    if (hasFetched.current) return; // Don't fetch if we already have
+    if (hasFetched.current) return;
 
     try {
       setIsLoading(true);
       const res = await getCodeFromSite({ mode, prompt, language });
+
+      if (!res?.success) {
+        toast.error("Invalid URL");
+        redirect("/");
+        return;
+      }
+
       if (res?.code) {
         setCode(res.code);
-        toast.success(
-          "Code Extracted it Will Work Better On Your System ThankYou !!!",
-          {
-            style: {
-              borderRadius: "10px",
-              background: "#14532d",
-              color: "#bbf7d0",
-              border: "1px solid #166534",
-            },
-          }
-        );
+        toast.success("Code extracted successfully!", {
+          style: {
+            borderRadius: "10px",
+            background: "#14532d",
+            color: "#bbf7d0",
+            border: "1px solid #166534",
+          },
+        });
       }
     } catch (error) {
       console.error("Error fetching code:", error);
       toast.error("Failed to generate code");
     } finally {
       setIsLoading(false);
-      hasFetched.current = true; // Mark as fetched
+      hasFetched.current = true;
     }
   }, [language, mode, prompt]);
 
   useEffect(() => {
     fetchCode();
-  }, []);
+  }, [fetchCode]);
 
   if (isLoading) {
     return (
       <div className="relative min-h-screen bg-gradient-to-br from-gray-900 to-black text-white flex items-center justify-center">
-        <Loading prompt={prompt} /> {/* Or your Loading component */}
+        <Loading prompt={prompt} />
       </div>
     );
   }
@@ -96,7 +98,7 @@ export default function CodeBlockPage() {
               <CodeEditor
                 value={code}
                 language="javascript"
-                onChange={() => setCode}
+                onChange={(newCode) => setCode(newCode || "")}
               />
             </div>
 
@@ -139,7 +141,7 @@ export default function CodeBlockPage() {
 
 function Header() {
   return (
-    <header className=" mt-14 md:mt-16">
+    <header className="mt-14 md:mt-16">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-6">
