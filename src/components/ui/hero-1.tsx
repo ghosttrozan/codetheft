@@ -155,7 +155,7 @@ const Hero1 = () => {
           secondary: "#7f1d1d",
         },
       });
-      router.push("/auth");
+      router.push("/auth/sign-up");
       return;
     }
 
