@@ -95,7 +95,7 @@ export function Footer() {
           </Link>
           <Link
             aria-label="Logo"
-            href="https://whatsapp.com/channel/0029Vb6D7BZCHDyowUkmLZ1z"
+            href="https://wa.me/916378211202"
             rel="noreferrer"
             target="_blank"
             className=""

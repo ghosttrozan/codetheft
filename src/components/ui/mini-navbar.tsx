@@ -129,6 +129,16 @@ const UserProfileDropdown = ({ user }: UserProfileDropdownProps) => {
         <DropdownMenuSeparator className="bg-[#333]" />
         <DropdownMenuGroup>
           <DropdownMenuItem className="focus:bg-[#333] focus:text-white text-white">
+            <Link href="/features" className="w-full">
+              How To Use
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="focus:bg-[#333] focus:text-white text-white">
+            <Link href="/features" className="w-full">
+              Features
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem className="focus:bg-[#333] focus:text-white text-white">
             <Link href="/about" className="w-full">
               About
             </Link>

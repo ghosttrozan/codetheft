@@ -17,7 +17,7 @@ export default function MonacoEditorClient({
 }: MonacoEditorProps) {
   return (
     <Editor
-      height="500px"
+      height="800px"
       defaultLanguage={language}
       defaultValue={value}
       onChange={onChange}

@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "./button";
 import { Alert, AlertContent, AlertDescription, AlertTitle } from "./alert";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { motion } from "framer-motion";
+import AllUsers from "../fetchAllUsers";
 
 const LanguageOption = ({
   name,
@@ -37,9 +39,9 @@ const ChooseOutput = ({
   onSubmit: (selectedLang: string) => void;
   onSelect: (lang: string) => void;
 }) => {
-  const [selectedLang, setSelectedLang] = React.useState("JSX");
+  const [selectedLang, setSelectedLang] = React.useState("HTML/CSS/JS");
 
-  const languages = ["JSX", "HTML/CSS", "HTML/CSS/JS", "React"];
+  const languages = ["HTML/CSS", "HTML/CSS/JS", "React/JSX"];
 
   return (
     <div className="fixed inset-0 flex items-center justify-center p-4 z-50  bg-opacity-50 backdrop-blur-sm">
@@ -315,8 +317,14 @@ const Hero1 = () => {
   return (
     <div className="min-h-screen pb-10 pt-20 text-white flex flex-col relative overflow-x-hidden">
       <header className="flex justify-between items-center p-6">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between w-full">
           <div className="font-bold text-md">CodeTheft</div>
+          <div className="font-bold text-md">
+            {" "}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+              <AllUsers />
+            </motion.div>
+          </div>
         </div>
       </header>
 

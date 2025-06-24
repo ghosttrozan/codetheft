@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { redirect, useSearchParams } from "next/navigation";
 import { Navbar } from "@/components/ui/mini-navbar";
-import { Code, Github, Sparkles } from "lucide-react";
+import { Check, Code, Copy, CopyIcon, Github, Sparkles } from "lucide-react";
 import CodeEditor from "@/components/CodeEditor";
 import { getCodeFromSite } from "@/lib/getCodeFromSite";
 import Link from "next/link";
@@ -21,8 +21,10 @@ export default function CodeBlockPage() {
   const mode = searchParams.get("mode") || "";
 
   const [code, setCode] = useState(DEFAULT_CODE);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const hasFetched = useRef(false);
+  const [copied, setCopied] = useState(false);
+  const copyTimeoutRef = useRef<NodeJS.Timeout>(null);
 
   const shouldShowPreview = ["HTML/CSS", "HTML/CSS/JS"].includes(language);
 
@@ -71,6 +73,43 @@ export default function CodeBlockPage() {
     fetchCode();
   }, [fetchCode]);
 
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+
+      // Clear previous timeout if exists
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+
+      // Reset copied state after 2 seconds
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopied(false);
+      }, 2000);
+
+      toast.success("Code copied to clipboard!", {
+        style: {
+          borderRadius: "10px",
+          background: "#14532d",
+          color: "#bbf7d0",
+          border: "1px solid #166534",
+        },
+      });
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+      toast.error("Failed to copy code");
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+    };
+  }, []);
+
   if (isLoading) {
     return (
       <div className="relative min-h-screen bg-gradient-to-br from-gray-900 to-black text-white flex items-center justify-center">
@@ -94,6 +133,23 @@ export default function CodeBlockPage() {
                   <Sparkles className="h-5 w-5 text-purple-400" />
                   <h2 className="text-lg font-semibold">Code Editor</h2>
                 </div>
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-2 px-3 py-2 text-sm rounded-md bg-gray-700 hover:bg-gray-600 transition-colors"
+                  disabled={!code}
+                >
+                  {copied ? (
+                    <>
+                      <Check className="h-4 w-4 text-green-400" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <CopyIcon className="h-4 w-4" />
+                      <span>Copy</span>
+                    </>
+                  )}
+                </button>
               </div>
               <CodeEditor
                 value={code}

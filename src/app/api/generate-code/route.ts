@@ -8,7 +8,7 @@ import { prisma } from "@/lib/db";
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
-  apiKey: "AIzaSyDyTNKPSwkLCwN-nERV2Bhp10lof7k4Vv4",
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
 export async function POST(request: Request) {
