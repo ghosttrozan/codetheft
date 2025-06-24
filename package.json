@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npx playwright install chromium && npx playwright install-deps &&  next build",
+    "build": "npx playwright install chromium && next build",
     "start": "next start",
+    "test:playwright": "npx playwright install && npx playwright test",
     "postinstall": "prisma generate"
   },
   "dependencies": {
