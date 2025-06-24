@@ -7,7 +7,7 @@
     "build": "npx playwright install chromium && next build",
     "start": "next start",
     "test:playwright": "npx playwright install && npx playwright test",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate && playwright install --with-deps chromium"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",
