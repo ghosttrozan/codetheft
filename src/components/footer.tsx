@@ -3,10 +3,6 @@
 import Link from "next/link";
 import { DIcons } from "dicons";
 
-const navigation = {
-  categories: [],
-};
-
 export function Footer() {
   return (
     <footer className="border-ali/20 :px-4 mx-auto w-full border-b   border-t  px-2">
@@ -28,40 +24,6 @@ export function Footer() {
           an agency of one. This means you ll work directly with me, founder of
           codetheft.
         </p>
-      </div>
-
-      <div className="mx-auto max-w-7xl px-6 py-10">
-        <div className="border-b border-dotted"> </div>
-        <div className="py-10">
-          {navigation.categories.map((category) => (
-            <div
-              key={category?.name}
-              className="grid grid-cols-3 flex-row justify-between gap-6 leading-6 md:flex"
-            >
-              {category.sections.map((section: any) => (
-                <div key={section.name}>
-                  <ul
-                    role="list"
-                    aria-labelledby={`${category.id}-${section.id}-heading-mobile`}
-                    className="flex flex-col space-y-2"
-                  >
-                    {section.items.map((item: any) => (
-                      <li key={item.name} className="flow-root">
-                        <Link
-                          href={item.href}
-                          className="text-sm text-slate-300 hover:text-white dark:text-slate-400 hover:dark:text-black md:text-xs"
-                        >
-                          {item.name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-        <div className="border-b border-dotted"> </div>
       </div>
 
       <div className="flex flex-wrap justify-center gap-y-6">
