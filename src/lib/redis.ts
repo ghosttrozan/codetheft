@@ -1,25 +1,14 @@
 // Update your Redis client configuration in @/lib/redis
-import Redis from 'ioredis';
+import Redis from "ioredis";
 
-const redis = new Redis({
-  host: process.env.REDIS_HOST || '127.0.0.1',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  retryStrategy: (times) => Math.min(times * 50, 2000),
-  // Enable offline queue to buffer commands when disconnected
-  enableOfflineQueue: true,
-  // Other recommended options
-  reconnectOnError: (err) => {
-    const targetError = 'READONLY';
-    if (err.message.includes(targetError)) {
-      return true; // Reconnect on READONLY error
-    }
-    return false;
-  },
-  maxRetriesPerRequest: 3
+const redis = new Redis(process.env.REDIS_URL!, {
+  maxRetriesPerRequest: 3,
+  enableOfflineQueue: false,
+  lazyConnect: true,
 });
 
 // Add connection event handlers
-redis.on('connect', () => console.log('Redis connected!'));
-redis.on('error', (err) => console.error('Redis error:', err));
+redis.on("connect", () => console.log("Redis connected!"));
+redis.on("error", (err) => console.error("Redis error:", err));
 
 export default redis;
