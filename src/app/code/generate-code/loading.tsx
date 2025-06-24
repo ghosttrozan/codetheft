@@ -1,4 +1,6 @@
+"use client";
 import { DotLoader } from "@/components/ui/dot-loader";
+import Typewriter from "typewriter-effect";
 
 const LOADER_ANIMATION = [
   [14, 7, 0, 8, 6, 13, 20],
@@ -41,8 +43,19 @@ export default function Loading({ prompt }: { prompt: string | null }) {
         </div>
       </div>
       <div className="max-w-md text-center text-gray-400 text-sm">
-        This may take a moment while we analyze the website and generate
-        optimized code for you.
+        This may take a moment while we analyze the website and generate.
+        <Typewriter
+          options={{
+            strings: [
+              "Welcome to CodeTheft 😎",
+              "Optimized code for you.",
+              "It Can take upto 5 mins. if Website is heavy",
+              "Scrapping code for you",
+            ],
+            autoStart: true,
+            loop: true,
+          }}
+        />
       </div>
     </div>
   );

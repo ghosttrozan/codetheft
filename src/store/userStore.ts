@@ -12,7 +12,9 @@ type User = {
 
 type userStore = {
   user: User | null;
+  isLoaded: Boolean;
   setUser: (user: User) => void;
+  setLoading: () => void;
   clearUser: () => void;
 };
 
@@ -20,6 +22,8 @@ export const useUserStore = create<userStore>()(
   devtools(
     (set) => ({
       user: null,
+      isLoaded: false,
+      setLoading: () => set({ isLoaded: true }),
       setUser: (user) => set({ user }),
       clearUser: () => set({ user: null }),
     }),

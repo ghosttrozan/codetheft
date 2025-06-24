@@ -171,9 +171,9 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [headerShapeClass, setHeaderShapeClass] = useState("rounded-full");
   const shapeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [userLoading, setUserLoading] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
 
-  const { user } = useUserStore();
+  const { user, isLoaded } = useUserStore();
 
   const getSafeUser = (User: typeof user | null | undefined): AppUser => ({
     id: String(User?.id ?? ""),
@@ -188,9 +188,11 @@ export function Navbar() {
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => setUserLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, [user]);
+    if (isLoaded) {
+      const timer = setTimeout(() => setInitialLoad(false), 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded]);
 
   useEffect(() => {
     if (shapeTimeoutRef.current) {
@@ -249,7 +251,7 @@ export function Navbar() {
     </Link>
   );
 
-  if (userLoading) {
+  if (initialLoad) {
     return (
       <header
         className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-20
@@ -280,12 +282,12 @@ export function Navbar() {
   return (
     <header
       className={`fixed top-6 left-1/2 transform -translate-x-1/2 z-50
-                       flex flex-col items-center
-                       pl-6 pr-6 py-3 backdrop-blur-sm
-                       ${headerShapeClass}
-                       border border-[#333] bg-[#1f1f1f57]
-                       w-[calc(100%-2rem)] sm:w-auto
-                       transition-[border-radius] duration-0 ease-in-out`}
+                   flex flex-col items-center
+                   pl-6 pr-6 py-3 backdrop-blur-sm
+                   ${headerShapeClass}
+                   border border-[#333] bg-[#1f1f1f57]
+                   w-[calc(100%-2rem)] sm:w-auto
+                   transition-[border-radius] duration-0 ease-in-out`}
     >
       <div className="flex items-center justify-between w-full gap-x-6 sm:gap-x-8">
         <Link href={"/"}>
@@ -302,10 +304,10 @@ export function Navbar() {
 
         <div className="hidden sm:flex items-center gap-2 sm:gap-3">
           {!user ? (
-            <div className="hidden sm:flex items-center gap-2 sm:gap-3">
+            <>
               {loginButtonElement}
               {signupButtonElement}
-            </div>
+            </>
           ) : (
             <UserProfileDropdown user={getSafeUser(user)} />
           )}
@@ -352,7 +354,7 @@ export function Navbar() {
 
       <div
         className={`sm:hidden flex flex-col items-center w-full transition-all ease-in-out duration-300 overflow-hidden
-                       ${isOpen ? "max-h-[1000px] opacity-100 pt-4" : "max-h-0 opacity-0 pt-0 pointer-events-none"}`}
+                   ${isOpen ? "max-h-[1000px] opacity-100 pt-4" : "max-h-0 opacity-0 pt-0 pointer-events-none"}`}
       >
         <div className="flex flex-col items-center space-y-4 mt-4 w-full">
           {!user ? (

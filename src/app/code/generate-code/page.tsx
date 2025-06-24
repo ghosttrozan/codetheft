@@ -28,14 +28,6 @@ export default function CodeBlockPage() {
 
   const shouldShowPreview = ["HTML/CSS", "HTML/CSS/JS"].includes(language);
 
-  const { user } = useUserStore();
-
-  useEffect(() => {
-    if (!user) {
-      redirect("/");
-    }
-  }, [user]);
-
   const fetchCode = useCallback(async () => {
     if (hasFetched.current) return;
 
@@ -50,7 +42,7 @@ export default function CodeBlockPage() {
       }
 
       if (res?.code) {
-        setCode(res.code);
+        setCode(res?.code.replace(/^```|```$/g, ""));
         toast.success("Code extracted successfully!", {
           style: {
             borderRadius: "10px",
