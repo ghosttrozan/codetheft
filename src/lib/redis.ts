@@ -3,7 +3,7 @@ import Redis from "ioredis";
 
 const redis = new Redis(process.env.REDIS_URL!, {
   maxRetriesPerRequest: 3,
-  enableOfflineQueue: false,
+  enableOfflineQueue: true,
 });
 
 // Add connection event handlers
