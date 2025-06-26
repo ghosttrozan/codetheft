@@ -33,7 +33,11 @@ export default function AllUsers() {
 
   return (
     <div>
-      <AvatarCircles numPeople={users.length} avatarUrls={avatarUrls} />
+      <AvatarCircles
+        numPeople={users.length}
+        maxVisible={5}
+        avatarUrls={avatarUrls}
+      />
     </div>
   );
 }
