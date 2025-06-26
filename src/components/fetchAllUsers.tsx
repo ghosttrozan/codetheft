@@ -23,8 +23,6 @@ export default function AllUsers() {
     getUsers();
   }, []);
 
-  console.log(users);
-
   if (!users || users.length === 0) return null;
 
   const avatarUrls = users.map(

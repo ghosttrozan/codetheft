@@ -35,14 +35,16 @@ export default function CodeBlockPage() {
       setIsLoading(true);
       const res = await getCodeFromSite({ mode, prompt, language });
 
-      if (!res?.success) {
-        toast.error("Invalid URL");
+      console.log(res);
+
+      if (!res.success) {
+        toast.error(res.error || "Invalid URL");
         redirect("/");
         return;
       }
 
-      if (res?.code) {
-        setCode(res?.code.replace(/^```|```$/g, ""));
+      if (res) {
+        setCode(res.code);
         toast.success("Code extracted successfully!", {
           style: {
             borderRadius: "10px",
@@ -59,7 +61,7 @@ export default function CodeBlockPage() {
       setIsLoading(false);
       hasFetched.current = true;
     }
-  }, [language, mode, prompt]);
+  }, [mode, language, prompt]);
 
   useEffect(() => {
     fetchCode();

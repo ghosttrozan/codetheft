@@ -118,7 +118,6 @@ const Hero1 = () => {
 
   const handleLanguageSelect = (lang: string) => {
     setSelectedLanguage(lang);
-    console.log(selectedLanguage);
   };
 
   const { user } = useUserStore();

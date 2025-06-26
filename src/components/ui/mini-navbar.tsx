@@ -296,7 +296,7 @@ export function Navbar() {
 
         <nav className="hidden sm:flex items-center space-x-4 sm:space-x-6 text-sm">
           {navLinksData.map((link) => (
-            <AnimatedNavLink key={link.href} href={link.href}>
+            <AnimatedNavLink key={link.label} href={link.href}>
               {link.label}
             </AnimatedNavLink>
           ))}
@@ -362,7 +362,7 @@ export function Navbar() {
               <nav className="flex flex-col items-center space-y-4 text-base w-full">
                 {navLinksData.map((link) => (
                   <Link
-                    key={link.href}
+                    key={link.label}
                     href={link.href}
                     className="text-gray-300 hover:text-white transition-colors w-full text-center"
                   >

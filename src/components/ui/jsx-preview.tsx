@@ -1,81 +1,57 @@
+"use client";
+
 import * as React from "react";
-import JsxParser from "react-jsx-parser";
-import type { TProps as JsxParserProps } from "react-jsx-parser";
 
-function matchJsxTag(code: string) {
-  if (code.trim() === "") {
-    return null;
-  }
+function JSXPreview({ jsx }: { jsx: string }) {
+  const [Component, setComponent] = React.useState<React.ReactNode>(null);
+  const [error, setError] = React.useState<string | null>(null);
 
-  const tagRegex = /<\/?([a-zA-Z][a-zA-Z0-9]*)\s*([^>]*?)(\/)?>/;
-  const match = code.match(tagRegex);
+  React.useEffect(() => {
+    try {
+      // 1. Remove all import statements (we'll provide React)
+      const cleanJsx = jsx.replace(
+        /import\s+.*?\s+from\s+['"].*?['"];?\n?/g,
+        ""
+      );
 
-  if (!match || typeof match.index === "undefined") {
-    return null;
-  }
+      // 2. Handle default export
+      const componentCode = cleanJsx.replace("export default", "return");
 
-  const [fullMatch, tagName, attributes, selfClosing] = match;
+      // 3. Create a function that returns the component
+      const componentFn = new Function(
+        "React",
+        `
+        try {
+          ${componentCode}
+        } catch(e) {
+          return () => React.createElement('div', null, 'Error: ' + e.message);
+        }
+      `
+      );
 
-  const type = selfClosing
-    ? "self-closing"
-    : fullMatch.startsWith("</")
-      ? "closing"
-      : "opening";
+      // 4. Execute the function with React
+      const component = componentFn(React);
 
-  return {
-    tag: fullMatch,
-    tagName,
-    type,
-    attributes: attributes.trim(),
-    startIndex: match.index,
-    endIndex: match.index + fullMatch.length,
-  };
-}
-
-function completeJsxTag(code: string) {
-  const stack: string[] = [];
-  let result = "";
-  let currentPosition = 0;
-
-  while (currentPosition < code.length) {
-    const match = matchJsxTag(code.slice(currentPosition));
-    if (!match) break;
-    const { tagName, type, endIndex } = match;
-
-    if (type === "opening") {
-      stack.push(tagName);
-    } else if (type === "closing") {
-      stack.pop();
+      // 5. Create React element
+      setComponent(React.createElement(component));
+      setError(null);
+    } catch (err: any) {
+      setError(err.message);
     }
-
-    result += code.slice(currentPosition, currentPosition + endIndex);
-    currentPosition += endIndex;
-  }
+  }, [jsx]);
 
   return (
-    result +
-    stack
-      .reverse()
-      .map((tag) => `</${tag}>`)
-      .join("")
+    <div className="preview-container">
+      {error ? (
+        <div className="error-message">
+          <h3>Error:</h3>
+          <pre>{error}</pre>
+        </div>
+      ) : (
+        Component
+      )}
+    </div>
   );
 }
 
-export type JSXPreviewProps = {
-  jsx: string;
-  isStreaming?: boolean;
-} & JsxParserProps;
-
-function JSXPreview({ jsx, isStreaming = false, ...props }: JSXPreviewProps) {
-  const processedJsx = React.useMemo(
-    () => (isStreaming ? completeJsxTag(jsx) : jsx),
-    [jsx, isStreaming]
-  );
-
-  // Cast JsxParser to any to work around the type incompatibility
-  const Parser = JsxParser as unknown as React.ComponentType<JsxParserProps>;
-
-  return <Parser jsx={processedJsx} {...props} />;
-}
-
-export { JSXPreview };
+export default JSXPreview;

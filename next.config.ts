@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       "images.unsplash.com",
     ],
   },
+  reactStrictMode: false,
 
   // typescript: {
   //   ignoreBuildErrors: true,
