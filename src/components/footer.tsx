@@ -20,7 +20,7 @@ export function Footer() {
           resonates with your audience. My mission is to empower businesses and
           brands to stand out in a crowded market. I believe in the power of
           design to tell stories, evoke emotions, and drive meaningful
-          connections. I believe in quality, not quantity. Designali is actually
+          connections. I believe in quality, not quantity. CodeTheft is actually
           an agency of one. This means you ll work directly with me, founder of
           codetheft.
         </p>
@@ -87,7 +87,7 @@ export function Footer() {
             <Link
               aria-label="Logo"
               className="font-bold"
-              href="https://www.instagram.com/aliimam.in/"
+              href="https://www.instagram.com/ghosttrozan
               target="_blank"
             >
               Alkaif {""}
