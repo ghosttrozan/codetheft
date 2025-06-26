@@ -364,13 +364,14 @@ const Hero1 = () => {
             <div className="bg-[#ffffff] text-black rounded-full p-3 flex items-center justify-between">
               <input
                 type="text"
+                onInput={this}
                 value={inputValue}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     setShowAlert(true);
                   }
                 }}
-                onChange={(e) => setInputValue(e.target.value)}
+                onChange={(e) => setInputValue(e.target.value.toLowerCase())}
                 placeholder={`${inputMode === "url" ? "Enter Valid URL (must end with .com, .in, etc.)" : '"How CodeTheft can help you today?"'}`}
                 className="bg-transparent  flex-1 outline-none text-gray-900 pl-4"
               />
