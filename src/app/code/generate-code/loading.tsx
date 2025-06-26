@@ -51,6 +51,11 @@ export default function Loading({ prompt }: { prompt: string | null }) {
               "Optimized code for you.",
               "It Can take upto 5 mins. if Website is heavy",
               "Scrapping code for you",
+              "Dont close this window",
+              "One successfull scrape cost 10 credit",
+              "Please wait",
+              "Almost Complete",
+              "Here we are"
             ],
             autoStart: true,
             loop: true,
