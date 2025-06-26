@@ -87,7 +87,7 @@ export function Footer() {
             <Link
               aria-label="Logo"
               className="font-bold"
-              href="https://www.instagram.com/ghosttrozan
+              href="https://www.instagram.com/ghosttrozan"
               target="_blank"
             >
               Alkaif {""}
