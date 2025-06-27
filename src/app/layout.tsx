@@ -4,6 +4,7 @@ import AuthProvider from "@/context/AuthProvider";
 import { Squares } from "@/components/ui/squares-background";
 import { Navbar } from "@/components/ui/mini-navbar";
 import FetchUser from "@/components/fetchUser";
+import { Analytics } from '@vercel/analytics/next';
 
 export default function RootLayout({
   children,
@@ -29,6 +30,7 @@ export default function RootLayout({
           <Navbar />
           {children}
         </AuthProvider>
+        <Analytics />
       </body>
     </html>
   );
