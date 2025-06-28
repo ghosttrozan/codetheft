@@ -134,8 +134,8 @@ const UserProfileDropdown = ({ user }: UserProfileDropdownProps) => {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="focus:bg-[#333] focus:text-white text-white">
-            <Link href="/features" className="w-full">
-              Features
+            <Link href="/pricing" className="w-full">
+              Pricing
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="focus:bg-[#333] focus:text-white text-white">
