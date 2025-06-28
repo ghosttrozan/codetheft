@@ -421,10 +421,10 @@ export function Navbar() {
               </div>
               <div className="w-full mt-4">
                 <Link
-                  href="/features"
+                  href="/pricing"
                   className="text-white flex items-center justify-center"
                 >
-                  Features
+                  Pricing
                 </Link>
               </div>
               <div className="w-full mt-4">
