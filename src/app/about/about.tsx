@@ -71,12 +71,23 @@ export function SparklesPreviewColorful() {
       </div>
       <div className="flex flex-col items-center justify-center gap-4 relative z-20">
         <h1 className="md:text-7xl text-3xl lg:text-9xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
-          About CodeTheft
+          CodeTheft - AI-Powered Code Scraping & Enhancement Tool 🚀
         </h1>
         <p className="text-neutral-300 cursor-default text-center max-w-2xl px-4">
-          A cutting-edge tool to detect and analyze code plagiarism, built with
-          Python and machine learning. We empower developers to protect their
-          intellectual property and foster ethical coding practices.
+
+CodeTheft is a cutting-edge web scraping tool specifically designed for developers to extract, filter, and enhance code from web pages using advanced AI capabilities. Perfect for learning, research, and code discovery.
+
+✨ Features Stealthy Code Scraping - Extract raw code from any webpage without detection
+
+AI-Powered Enhancement - Clean and improve scraped code with Gemini AI
+
+Precision Filtering - Isolate only the relevant code snippets
+
+Multi-Source Support - Works with GitHub, GitLab, StackOverflow, and more
+
+Export Options - Download enhanced code in multiple formats
+
+Rate Limit Bypass - Intelligent request throttling to avoid blocks
         </p>
       </div>
     </div>
